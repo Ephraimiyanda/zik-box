@@ -7,6 +7,7 @@ import { MovieCard } from "@/components/movie/movieCard";
 import { movieTypes } from "@/types/movieTypes";
 import ButtonFlatList from "@/components/butons/buttonList";
 import { CountryCodes } from "@/constants/lists";
+import { useIsFocused } from "@react-navigation/native";
 
 interface ApiResponse {
   results: movieTypes[];
@@ -24,15 +25,23 @@ export default function Category({
   const [selectedCountryCode, setSelectedCountryCode] = useState("All");
   const [page, setPage] = useState(1);
   const formatCategory = category.split(" ").join("_").toLocaleLowerCase();
-  const [urls] = useState([
-    formatCategory === "trending"
-      ? `trending/tv/week?language=en-US&region=${
-          selectedCountryCode === "All" ? "" : selectedCountryCode
-        }&page=${page}`
-      : `${type}/${formatCategory}?language=en-US&region=${
-          selectedCountryCode === "All" ? "" : selectedCountryCode
-        }&page=${page}`,
-  ]);
+  const [urls, setUrls] = useState<string[]>([]);
+  const isFocused = useIsFocused();
+
+  // Fetch data when the screen is focused
+  useEffect(() => {
+    if (isFocused) {
+      setUrls([
+        formatCategory === "trending"
+          ? `trending/tv/week?language=en-US&region=${
+              selectedCountryCode === "All" ? "" : selectedCountryCode
+            }&page=${page}`
+          : `${type}/${formatCategory}?language=en-US&region=${
+              selectedCountryCode === "All" ? "" : selectedCountryCode
+            }&page=${page}`,
+      ]);
+    }
+  }, [isFocused, selectedCountryCode, page]);
 
   //get parameters from hook
   const { data, isLoading, error } = useFetchData(urls);

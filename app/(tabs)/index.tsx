@@ -1,34 +1,41 @@
 import React, { useState } from "react";
-import { ButtonGroup, SearchBar, Tab, TabView } from "@rneui/themed";
-import { Link, router } from "expo-router";
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  useColorScheme,
-} from "react-native";
+import { SearchBar, Tab, TabView } from "@rneui/themed";
+import { router } from "expo-router";
+import { View, useColorScheme } from "react-native";
 import { Colors } from "@/constants/Colors";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import styles from "@/styles/style";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { MovieCard } from "@/components/movie/movieCard";
-import { MovieCardLoader } from "@/components/loaders/movieCardLoader";
-import { SearchCard } from "@/components/search/searchCard";
-import ButtonFlatList from "@/components/butons/buttonList";
 import TrendingMovies from "../screenTabs/trendingMovies";
-import { ThemedText } from "@/components/ThemedText";
 import Category from "../screenTabs/category";
 
 export default function Index() {
   const [index, setIndex] = React.useState(0);
   const [search, setSearch] = useState("");
+  const [loadedTabs, setLoadedTabs] = useState<boolean[]>([
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+
+  // Function to mark a tab as loaded the first time it's viewed
+  const markTabAsLoaded = (tabIndex: number) => {
+    setLoadedTabs((prev) => {
+      const updatedTabs = [...prev];
+      updatedTabs[tabIndex] = true;
+      return updatedTabs;
+    });
+  };
 
   const colorScheme = useColorScheme();
 
   const updateSearch = (search: string) => {
     setSearch(search);
   };
+
   const tabTitleStyle = (active: boolean) => {
     return {
       color: active
@@ -99,37 +106,60 @@ export default function Index() {
         <Tab.Item title="Tv series" titleStyle={tabTitleStyle} />
         <Tab.Item title="Top Rated series" titleStyle={tabTitleStyle} />
         <Tab.Item title="Popular series" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Latest" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Airing Today" titleStyle={tabTitleStyle} />
       </Tab>
 
-      <TabView value={index} onChange={setIndex} animationType="spring">
+      <TabView
+        value={index}
+        onChange={(newIndex) => {
+          setIndex(newIndex);
+          markTabAsLoaded(newIndex); // Mark the tab as loaded when you switch to it
+        }}
+        animationType="spring"
+      >
+        {/* Trending Movies Tab */}
         <TabView.Item style={{ width: "100%", height: "100%" }}>
-          <TrendingMovies />
+          {loadedTabs[0] && <TrendingMovies />}
+          {/* Already loaded */}
         </TabView.Item>
+
+        {/* Now Playing Movies Tab */}
         <TabView.Item>
-          <Category category={"Now Playing"} type={"movie"} />
+          {loadedTabs[1] ? (
+            <Category category={"Now Playing"} type={"movie"} />
+          ) : null}
         </TabView.Item>
+
+        {/* Popular Movies Tab */}
         <TabView.Item>
-          <Category category={"Popular"} type={"movie"} />
+          {loadedTabs[2] ? (
+            <Category category={"Popular"} type={"movie"} />
+          ) : null}
         </TabView.Item>
+
+        {/* Top Rated Movies Tab */}
         <TabView.Item>
-          <Category category={"Top Rated"} type={"movie"} />
+          {loadedTabs[3] ? (
+            <Category category={"Top Rated"} type={"movie"} />
+          ) : null}
         </TabView.Item>
+
+        {/* Trending TV Tab */}
         <TabView.Item>
-          <Category category={"Trending"} type={"tv"} />
+          {loadedTabs[4] ? (
+            <Category category={"Trending"} type={"tv"} />
+          ) : null}
         </TabView.Item>
+
+        {/* Top Rated TV Tab */}
         <TabView.Item>
-          <Category category={"Top Rated"} type={"tv"} />
+          {loadedTabs[5] ? (
+            <Category category={"Top Rated"} type={"tv"} />
+          ) : null}
         </TabView.Item>
+
+        {/* Popular TV Tab */}
         <TabView.Item>
-          <Category category={"Popular"} type={"tv"} />
-        </TabView.Item>
-        <TabView.Item>
-          <Category category={"Latest"} type={"tv"} />
-        </TabView.Item>
-        <TabView.Item>
-          <Category category={"Airing Today"} type={"tv"} />
+          {loadedTabs[6] ? <Category category={"Popular"} type={"tv"} /> : null}
         </TabView.Item>
       </TabView>
     </View>
