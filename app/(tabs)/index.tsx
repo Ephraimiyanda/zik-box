@@ -7,6 +7,7 @@ import styles from "@/styles/style";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import TrendingMovies from "../screenTabs/trendingMovies";
 import Category from "../screenTabs/category";
+import { ThemedView } from "@/components/ThemedView";
 
 export default function Index() {
   const [index, setIndex] = React.useState(0);
@@ -50,37 +51,34 @@ export default function Index() {
     };
   };
   return (
-    <View style={styles.container}>
-      <SearchBar
-        onPress={() => {
-          router.push("/(tabs)/search");
-        }}
-        role="link"
-        placeholder="Search here..."
-        onChangeText={updateSearch}
-        value={search}
-        containerStyle={[
-          styles.searchBarContainerStyle,
-          {
-            paddingBottom: 0,
-            borderWidth: 0,
-          },
-        ]}
-        inputContainerStyle={{
-          backgroundColor: Colors[colorScheme ?? "dark"].fadeColor,
-          height: 40,
-        }}
-        inputStyle={styles.inputStyle}
-        round
-        searchIcon={
-          <Ionicons
-            name="search-outline"
-            size={24}
-            color={Colors[colorScheme ?? "dark"].text}
-            style={{ opacity: 0.3 }}
-          />
-        }
-      />
+    <ThemedView style={styles.container}>
+      <View style={styles.flatContainer}>
+        <SearchBar
+          onPress={() => {
+            router.push("/(tabs)/search");
+          }}
+          role="link"
+          placeholder="Search here..."
+          onChangeText={updateSearch}
+          value={search}
+          containerStyle={styles.searchBarContainerStyle}
+          inputContainerStyle={{
+            backgroundColor: Colors[colorScheme ?? "dark"].fadeColor,
+            height: 40,
+          }}
+          inputStyle={styles.inputStyle}
+          round
+          searchIcon={
+            <Ionicons
+              name="search-outline"
+              size={24}
+              color={Colors[colorScheme ?? "dark"].text}
+              style={{ opacity: 0.3 }}
+            />
+          }
+        />
+      </View>
+
       <Tab
         value={index}
         onChange={setIndex}
@@ -162,6 +160,6 @@ export default function Index() {
           {loadedTabs[6] ? <Category category={"Popular"} type={"tv"} /> : null}
         </TabView.Item>
       </TabView>
-    </View>
+    </ThemedView>
   );
 }

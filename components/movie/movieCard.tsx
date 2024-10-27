@@ -7,8 +7,8 @@ import { Skeleton } from "@rneui/base";
 export function MovieCard({ item }: { item: movieTypes }) {
   const colorScheme = useColorScheme();
   return (
-    <View
-      key={item.id}
+    <Link
+      href={`/movie/${item.id}`}
       style={{
         position: "relative",
         flexDirection: "column",
@@ -17,45 +17,48 @@ export function MovieCard({ item }: { item: movieTypes }) {
         paddingVertical: 3,
       }}
     >
-      {item.poster_path ? (
-        <Image
+      {" "}
+      <View key={item.id}>
+        {item.poster_path.length > 0 ? (
+          <Image
+            style={{
+              minHeight: 170,
+              maxHeight: 170,
+              height: "100%",
+              flex: 1,
+              width: 180,
+              borderRadius: 10,
+              backgroundColor: Colors.active,
+              borderColor: Colors.active,
+              maxWidth: 110,
+            }}
+            contentFit="cover"
+            transition={1000}
+            source={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
+          />
+        ) : (
+          <Skeleton
+            style={{
+              flex: 1,
+              width: "100%",
+              height: 170,
+              borderRadius: 10,
+              maxWidth: 180,
+            }}
+          />
+        )}
+        <Text
           style={{
-            minHeight: 170,
-            maxHeight: 170,
-            height: "100%",
-            flex: 1,
-            width: 180,
-            borderRadius: 10,
-            backgroundColor: Colors.active,
-            borderColor: Colors.active,
-            maxWidth: 110,
+            fontSize: 14,
+            fontWeight: "600",
+            color: Colors[colorScheme ?? "dark"].text,
+            maxWidth: 100,
           }}
-          contentFit="cover"
-          transition={1000}
-          source={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
-        />
-      ) : (
-        <Skeleton
-          style={{
-            flex: 1,
-            width: "100%",
-            height: 170,
-            borderRadius: 10,
-            maxWidth: 180,
-          }}
-        />
-      )}
-      <Text
-        style={{
-          fontSize: 14,
-          fontWeight: "600",
-          color: Colors[colorScheme ?? "dark"].text,
-          maxWidth: 100,
-        }}
-        numberOfLines={2}
-      >
-        {item.title ? item.title : item.name}
-      </Text>
-    </View>
+          numberOfLines={2}
+        >
+          {item.title ? item.title : item.name}
+        </Text>
+      </View>
+    </Link>
   );
 }

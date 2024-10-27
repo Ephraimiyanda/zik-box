@@ -1,4 +1,4 @@
-const CountryCodes = [
+export const CountryCodes = [
   "All",
   "ar",
   "au",

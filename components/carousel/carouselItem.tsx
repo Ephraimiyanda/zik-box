@@ -39,11 +39,12 @@ export const CarouselCardItem = ({
             name: "star-outline",
             type: "FontAwesome",
             size: 24,
-            color: "#FF3D00",
+            color: "#FF8700",
           }}
           titleStyle={{
             fontWeight: "700",
-            color: "#FF3D00",
+            color: "#FF8700",
+            fontSize: 16,
           }}
           size="md"
           containerStyle={{
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   imgBackground: {
     width: "100%",
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     height: 160,
   },
 

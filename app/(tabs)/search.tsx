@@ -5,6 +5,7 @@ import { Pressable, Text, TextInput, View, useColorScheme } from "react-native";
 import { Colors } from "@/constants/Colors";
 import styles from "@/styles/style";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { ThemedView } from "@/components/ThemedView";
 
 export default function Search() {
   const [search, setSearch] = useState("");
@@ -23,7 +24,7 @@ export default function Search() {
   };
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <View
         style={[
           styles.flatContainer,
@@ -38,12 +39,7 @@ export default function Search() {
           placeholder="Search here..."
           onChangeText={updateSearch}
           value={search}
-          containerStyle={[
-            styles.searchBarContainerStyle,
-            {
-              width: search.length > 0 ? "80%" : "100%",
-            },
-          ]}
+          containerStyle={[styles.searchBarContainerStyle]}
           inputContainerStyle={{
             backgroundColor: Colors[colorScheme ?? "dark"].fadeColor,
             height: 40,
@@ -66,30 +62,35 @@ export default function Search() {
           }
         />
 
-        <Pressable
-          style={[
-            {
-              width: search.length > 0 ? "30%" : 0,
-              height: 40,
-            },
-            styles.center,
-          ]}
-          onPress={() => {
-            setSearch("");
-          }}
-        >
-          <Text
-            style={{
-              color: Colors[colorScheme ?? "dark"].active,
-              marginBottom: "auto",
-              marginTop: "auto",
-              textAlignVertical: "center",
+        {search.length > 0 && (
+          <Pressable
+            style={[
+              {
+                width: "auto",
+                paddingHorizontal: 8,
+                height: 40,
+              },
+              styles.center,
+            ]}
+            onPress={() => {
+              setSearch("");
             }}
           >
-            Search
-          </Text>
-        </Pressable>
+            <Text
+              style={{
+                color: Colors[colorScheme ?? "dark"].active,
+                marginBottom: "auto",
+                marginTop: "auto",
+                textAlignVertical: "center",
+                fontWeight: "600",
+                fontSize: 18,
+              }}
+            >
+              Search
+            </Text>
+          </Pressable>
+        )}
       </View>
-    </View>
+    </ThemedView>
   );
 }

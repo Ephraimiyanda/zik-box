@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
 export function useFetchData(urls: string[]) {
-  const [trendingWeekMovieData, setTrendingWeekMovieData] = useState([]);
-  const [trendingDayMovieData, setTrendingDayMovieData] = useState([]);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -48,7 +46,9 @@ export function useFetchData(urls: string[]) {
   };
 
   useEffect(() => {
-    fetchData();
+    if (urls.length > 0) {
+      fetchData();
+    }
   }, [urls]);
 
   // Return the data, loading, and error states

@@ -1,10 +1,11 @@
 import { StyleSheet } from "react-native";
+import Constants from "expo-constants";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
     flexDirection: "column",
-    marginTop: 25,
+    paddingTop: Constants.statusBarHeight,
   },
   flatContainer: {
     display: "flex",
@@ -17,14 +18,20 @@ const styles = StyleSheet.create({
   searchBarContainerStyle: {
     backgroundColor: "transparent",
     borderWidth: 0,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
     borderColor: "transparent",
     transform: "all 0.5s",
     paddingVertical: 4,
+    flexDirection: "row",
+    flexBasis: 1,
+    flex: 1,
   },
   inputStyle: {
-    borderRadius: 30,
     color: "#ffff",
     height: 0,
+    borderWidth: 0,
+    borderLeftWidth: 0,
   },
   center: {
     display: "flex",

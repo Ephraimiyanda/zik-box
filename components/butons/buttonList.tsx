@@ -32,13 +32,13 @@ const ButtonFlatList = ({
       <TouchableOpacity
         onPress={() => setSelectedButton(item)}
         style={{
-          minWidth: 70,
-          paddingHorizontal: 6,
+          minWidth: 40,
+          paddingHorizontal: 4,
           borderRadius: 5,
           backgroundColor: isSelected
             ? Colors[colorScheme ?? "dark"].tabColor
             : "transparent",
-          marginRight: 10,
+          marginRight: 0,
           height: 30,
           display: "flex",
           justifyContent: "center",
