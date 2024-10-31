@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
 import * as Network from "expo-network";
 import { useFetchData } from "@/hooks/useFetchData";
 import { MovieCardLoader } from "@/components/loaders/movieCardLoader";
@@ -145,7 +145,7 @@ export default function Category({
           ></ButtonFlatList>
         </View>
       )}
-      <View
+      <FlatList
         style={{
           display: "flex",
           justifyContent: "space-around",
@@ -154,15 +154,11 @@ export default function Category({
           width: "100%",
           gap: 3,
         }}
-      >
-        {!isLoading && movieData && movieData?.length > 0 ? (
-          movieData?.map((movie: movieTypes) => (
-            <MovieCard cardWidth={110} key={movie.id} item={movie}></MovieCard>
-          ))
-        ) : (
-          <MovieCardLoader></MovieCardLoader>
+        data={movieData}
+        renderItem={({ item }) => (
+          <MovieCard cardWidth={110} key={item.id} item={item}></MovieCard>
         )}
-      </View>
+      ></FlatList>
       <ActivityIndicator
         size="small"
         color={Colors.active}
