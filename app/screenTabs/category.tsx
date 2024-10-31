@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import * as Network from "expo-network";
 import { useFetchData } from "@/hooks/useFetchData";
 import { MovieCardLoader } from "@/components/loaders/movieCardLoader";
@@ -8,10 +8,7 @@ import { movieTypes } from "@/types/movieTypes";
 import ButtonFlatList from "@/components/butons/buttonList";
 import { CountryCodes } from "@/constants/lists";
 import { useIsFocused } from "@react-navigation/native";
-
-interface ApiResponse {
-  results: movieTypes[];
-}
+import { Colors } from "@/constants/Colors";
 
 export default function Category({
   category,
@@ -20,28 +17,25 @@ export default function Category({
   category: string;
   type: string;
 }) {
-  const [trendingWeekMovieData, setTrendingWeekMovieData] =
-    useState<ApiResponse>();
+  const [movieData, setMovieData] = useState<movieTypes[]>([]);
   const [selectedCountryCode, setSelectedCountryCode] = useState("All");
   const [page, setPage] = useState(1);
   const formatCategory = category.split(" ").join("_").toLocaleLowerCase();
   const [urls, setUrls] = useState<string[]>([]);
-  const isFocused = useIsFocused();
+  const [infiniteLoading, setInfiteLoading] = useState(false);
 
   // Fetch data when the screen is focused
   useEffect(() => {
-    if (isFocused) {
-      setUrls([
-        formatCategory === "trending"
-          ? `trending/tv/week?language=en-US&region=${
-              selectedCountryCode === "All" ? "" : selectedCountryCode
-            }&page=${page}`
-          : `${type}/${formatCategory}?language=en-US&region=${
-              selectedCountryCode === "All" ? "" : selectedCountryCode
-            }&page=${page}`,
-      ]);
-    }
-  }, [isFocused, selectedCountryCode, page]);
+    setUrls([
+      formatCategory === "trending"
+        ? `trending/tv/week?language=en-US&region=${
+            selectedCountryCode === "All" ? "" : selectedCountryCode
+          }&page=${page}`
+        : `${type}/${formatCategory}?language=en-US&region=${
+            selectedCountryCode === "All" ? "" : selectedCountryCode
+          }&page=${page}`,
+    ]);
+  }, [selectedCountryCode, page]);
 
   //get parameters from hook
   const { data, isLoading, error } = useFetchData(urls);
@@ -57,17 +51,70 @@ export default function Category({
 
     return years;
   }
+  // Handle incoming data when it's available
   useEffect(() => {
-    if (data) {
-      setTrendingWeekMovieData(data[0] || []);
+    if (data && data[0]?.results) {
+      const uniqueTrendingWeekMovie = [
+        ...new Map(
+          data[0].results.map((item: any) => [item.id, item])
+        ).values(),
+      ] as movieTypes[];
+      setMovieData((prev) => [...prev, ...uniqueTrendingWeekMovie]);
     }
   }, [data]);
+
   const isConnected = async () => {
     const connected = await Network.getNetworkStateAsync();
     return connected.isConnected;
   };
+
+  // Infinite scrolling function
+  const infiniteScrolling = () => {
+    if (data && data[0]?.total_pages > page && !infiniteLoading) {
+      setInfiteLoading(true);
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  // Reset the infinite loading indicator when data is finished loading
+  useEffect(() => {
+    if (!isLoading) {
+      setInfiteLoading(false);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setInfiteLoading(false);
+    }
+  }, [isLoading]);
+
+  if (isLoading && page === 1) {
+    return (
+      <ScrollView
+        onScrollEndDrag={infiniteScrolling}
+        style={{
+          paddingHorizontal: 4,
+          paddingVertical: 4,
+          display: "flex",
+        }}
+        contentContainerStyle={{
+          display: "flex",
+          justifyContent: "space-around",
+          flexDirection: "column",
+          flexWrap: "wrap",
+          gap: 4,
+          paddingBottom: 20,
+        }}
+      >
+        <MovieCardLoader></MovieCardLoader>
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView
+      onScrollEndDrag={infiniteScrolling}
       style={{
         paddingHorizontal: 4,
         paddingVertical: 4,
@@ -108,16 +155,19 @@ export default function Category({
           gap: 3,
         }}
       >
-        {!isLoading &&
-        trendingWeekMovieData &&
-        trendingWeekMovieData?.results?.length > 0 ? (
-          trendingWeekMovieData?.results.map((movie: movieTypes) => (
-            <MovieCard key={movie.id} item={movie}></MovieCard>
+        {!isLoading && movieData && movieData?.length > 0 ? (
+          movieData?.map((movie: movieTypes) => (
+            <MovieCard cardWidth={110} key={movie.id} item={movie}></MovieCard>
           ))
         ) : (
           <MovieCardLoader></MovieCardLoader>
         )}
       </View>
+      <ActivityIndicator
+        size="small"
+        color={Colors.active}
+        animating={infiniteLoading}
+      />
     </ScrollView>
   );
 }

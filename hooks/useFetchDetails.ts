@@ -1,22 +1,7 @@
+import { tmdbData } from "@/types/movieTypes";
 import { useEffect, useState } from "react";
-interface tmdbData {
-  budget: number;
-  genres: [
-    {
-      id: number;
-      name: string;
-    }
-  ];
-  id: number;
-  original_title: string;
-  overview: string;
-  release_date: string;
-  runtime: number;
-  tagline: string;
-  status: string;
-  vote_average: number;
-}
-export function useFetchDetails(url: string) {
+
+export function useFetchDetails(movieId: string | string[]) {
   const [tmdbData, setTmdbData] = useState<tmdbData>();
   const [ytsData, setYtsData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,24 +23,53 @@ export function useFetchDetails(url: string) {
       setYtsData(null);
     }
   };
+
   const fetchTmdbData = async () => {
+    const urls = [
+      `movie/${movieId}?language=en-US`,
+      `movie/${movieId}/recommendations?language=en-US&page=1`,
+      `movie/${movieId}/videos`,
+      `movie/${movieId}/credits?language=en-US`,
+      `movie/${movieId}/reviews?language=en-US&page=1`,
+    ];
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_ROUTE}/${url}`, {
-        headers: {
-          AUTHORIZATION: "Bearer " + API_KEY,
-        },
-      });
-      const resData = await response.json();
+      // Fetch all URLs in parallel
+      const responses = await Promise.all(
+        urls.map((url: string) =>
+          fetch(`${API_ROUTE}/${url}`, {
+            headers: {
+              AUTHORIZATION: "Bearer " + API_KEY,
+            },
+          })
+        )
+      );
 
-      if (resData) {
-        setTmdbData(resData);
-        fetchYtsData(resData.imdb_id);
-      }
+      // Ensure all responses are okay before proceeding
+      const jsonData: any = await Promise.all(
+        responses.map((response) => {
+          if (!response.ok) {
+            setError(true);
+          }
+          return response.json();
+        })
+      );
+      const crewData = [...jsonData[3].cast, ...jsonData[3].crew];
+      const uniqueCrewData = [
+        ...new Map(crewData.map((item) => [item.id, item])).values(),
+      ];
+      setTmdbData({
+        ...tmdbData,
+        ...jsonData[0],
+        recommendations: jsonData[1].results || [],
+        videos: jsonData[2].results || [],
+        cast: uniqueCrewData || [],
+        reviews: jsonData[4].results || [],
+      });
+      setIsLoading(false);
     } catch (err) {
       setError(true);
       setIsLoading(false);
-      console.error(err); // Optional: log the error for debugging
     } finally {
       setIsLoading(false);
     }

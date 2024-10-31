@@ -1,7 +1,11 @@
+import { movieTypes } from "@/types/movieTypes";
 import { useEffect, useState } from "react";
 
+interface ApiResponse {
+  results: movieTypes[];
+}
 export function useFetchData(urls: string[]) {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -26,7 +30,7 @@ export function useFetchData(urls: string[]) {
       const jsonData: any = await Promise.all(
         responses.map((response) => {
           if (!response.ok) {
-            throw new Error(`Failed to fetch: ${response.statusText}`);
+            setError(true);
           }
           return response.json();
         })

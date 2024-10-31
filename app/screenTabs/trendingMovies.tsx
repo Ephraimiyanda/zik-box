@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, View, useColorScheme } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import * as Network from "expo-network";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import {
@@ -11,19 +11,20 @@ import { MovieCardLoader } from "@/components/loaders/movieCardLoader";
 import { CarouselLoader } from "@/components/loaders/carouselLoader";
 import { MovieCard } from "@/components/movie/movieCard";
 import { movieTypes } from "@/types/movieTypes";
-
-interface ApiResponse {
-  results: movieTypes[];
-}
+import { Colors } from "@/constants/Colors";
+import { colorScheme } from "@/constants/colorScheme";
 
 export default function TrendingMovies() {
-  const [trendingWeekMovieData, setTrendingWeekMovieData] =
-    useState<ApiResponse>();
-  const [trendingDayMovieData, setTrendingDayMovieData] =
-    useState<ApiResponse>();
+  const [trendingWeekMovieData, setTrendingWeekMovieData] = useState<
+    movieTypes[]
+  >([]);
+  const [trendingDayMovieData, setTrendingDayMovieData] = useState<
+    movieTypes[]
+  >([]);
   const [urls, setUrls] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [index, setIndex] = useState(0);
+  const [infiniteLoading, setInfiteLoading] = useState(false);
   const isCarousel = useRef(null);
 
   useEffect(() => {
@@ -35,10 +36,16 @@ export default function TrendingMovies() {
 
   const { data, isLoading, error } = useFetchData(urls);
 
+  // Handle incoming data when it's available
   useEffect(() => {
-    if (data) {
-      setTrendingDayMovieData(data[1] || []);
-      setTrendingWeekMovieData(data[0] || []);
+    if (data && data[1]?.results && data[0]?.results) {
+      const uniqueTrendingWeekMovie = [
+        ...new Map(
+          data[0].results.map((item: any) => [item.id, item])
+        ).values(),
+      ] as movieTypes[];
+      setTrendingDayMovieData((prev) => [...prev, ...data[1].results]);
+      setTrendingWeekMovieData((prev) => [...prev, ...uniqueTrendingWeekMovie]);
     }
   }, [data]);
 
@@ -47,8 +54,53 @@ export default function TrendingMovies() {
     return connected.isConnected;
   };
 
+  // Infinite scrolling function
+  const infiniteScrolling = () => {
+    if (data && data[0]?.total_pages > page && !infiniteLoading) {
+      setInfiteLoading(true);
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  // Reset the infinite loading indicator when data is finished loading
+  useEffect(() => {
+    if (!isLoading) {
+      setInfiteLoading(false);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setInfiteLoading(false);
+    }
+  }, [isLoading]);
+
+  if (isLoading && page === 1) {
+    return (
+      <ScrollView
+        onScrollEndDrag={infiniteScrolling}
+        style={{
+          paddingHorizontal: 4,
+          paddingVertical: 4,
+          display: "flex",
+        }}
+        contentContainerStyle={{
+          display: "flex",
+          justifyContent: "space-around",
+          flexDirection: "column",
+          flexWrap: "wrap",
+          gap: 4,
+          paddingBottom: 20,
+        }}
+      >
+        <CarouselLoader />
+        <MovieCardLoader></MovieCardLoader>
+      </ScrollView>
+    );
+  }
   return (
     <ScrollView
+      onScrollEndDrag={infiniteScrolling}
       style={{
         paddingHorizontal: 4,
         paddingVertical: 4,
@@ -63,20 +115,20 @@ export default function TrendingMovies() {
         paddingBottom: 20,
       }}
     >
-      {!isLoading && trendingDayMovieData ? (
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            gap: 2,
-          }}
-        >
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          gap: 2,
+        }}
+      >
+        {trendingDayMovieData.length > 0 && (
           <Carousel
             layout="default"
             layoutCardOffset={9}
             ref={isCarousel}
-            data={trendingDayMovieData?.results?.slice(0, 6)}
+            data={trendingDayMovieData?.slice(0, 6)}
             // @ts-ignore
             renderItem={CarouselCardItem}
             sliderWidth={SLIDER_WIDTH}
@@ -85,32 +137,31 @@ export default function TrendingMovies() {
             useScrollView={true}
             onSnapToItem={(index: number) => setIndex(index)}
           />
-          <Pagination
-            dotsLength={trendingDayMovieData?.results?.slice(0, 6).length}
-            activeDotIndex={index}
-            // @ts-ignore
-            carouselRef={isCarousel}
-            dotStyle={{
-              width: 10,
-              height: 10,
-              borderRadius: 5,
-              marginHorizontal: 0,
-              backgroundColor: "#FF8700",
-            }}
-            containerStyle={{
-              marginVertical: 0,
-            }}
-            inactiveDotOpacity={0.4}
-            inactiveDotScale={0.6}
-            tappableDots={true}
-            animatedFriction={2}
-            animatedDuration={1}
-            animatedTension={0}
-          />
-        </View>
-      ) : (
-        <CarouselLoader />
-      )}
+        )}
+        <Pagination
+          dotsLength={trendingDayMovieData?.slice(0, 6).length}
+          activeDotIndex={index}
+          // @ts-ignore
+          carouselRef={isCarousel}
+          dotStyle={{
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            marginHorizontal: 0,
+            backgroundColor: "#FF8700",
+          }}
+          containerStyle={{
+            marginVertical: 0,
+          }}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={0.6}
+          tappableDots={true}
+          animatedFriction={2}
+          animatedDuration={1}
+          animatedTension={0}
+        />
+      </View>
+
       <View
         style={{
           display: "flex",
@@ -121,14 +172,20 @@ export default function TrendingMovies() {
           gap: 3,
         }}
       >
-        {!isLoading && trendingWeekMovieData ? (
-          trendingWeekMovieData?.results?.map((movie: movieTypes) => (
-            <MovieCard key={movie.id} item={movie}></MovieCard>
-          ))
-        ) : (
-          <MovieCardLoader></MovieCardLoader>
-        )}
+        {trendingWeekMovieData.length > 0 &&
+          trendingWeekMovieData.map((movie: movieTypes, index) => (
+            <MovieCard
+              cardWidth={110}
+              key={movie.id + index}
+              item={movie}
+            ></MovieCard>
+          ))}
       </View>
+      <ActivityIndicator
+        size="small"
+        color={Colors.active}
+        animating={infiniteLoading}
+      />
     </ScrollView>
   );
 }

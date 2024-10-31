@@ -18,14 +18,17 @@ import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { Chip } from "@rneui/base";
+import { cast, movieTypes, review } from "@/types/movieTypes";
+import { MovieCard } from "@/components/movie/movieCard";
+import { MovieDetailLoader } from "@/components/loaders/movieDetailLoader";
+import { ProfileCard } from "@/components/profile/profileCard";
+import { ReviewCard } from "@/components/review/reviewCard";
 
 export default function MovieDetails() {
   const { movieId } = useLocalSearchParams();
   const [playing, setPlaying] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-  const url = `movie/${movieId}?language=en-US`;
-  const { tmdbData, ytsData, isLoading, error } = useFetchDetails(url);
+  const { tmdbData, ytsData, isLoading, error } = useFetchDetails(movieId);
   const colorScheme = useColorScheme();
 
   const onStateChange = useCallback((state: string) => {
@@ -38,11 +41,22 @@ export default function MovieDetails() {
     setShowFullText((prev) => !prev);
   };
 
-  const togglePlaying = useCallback(() => {
-    setPlaying((prev) => !prev);
-  }, []);
+  //get official trailer
+  const videoTRailer = tmdbData?.videos.filter(
+    (video) =>
+      (video.official =
+        true && video.name.toLocaleLowerCase().includes("official trailer"))
+  );
 
+  const playlist_trailers = tmdbData?.videos?.map((video) => video.key);
   const previewText = tmdbData?.overview?.slice(0, 200);
+
+  //return loading screen
+  if (isLoading) {
+    return <MovieDetailLoader />;
+  }
+
+  //return details screen
   return (
     <ThemedView style={styles.container}>
       <ScrollView
@@ -51,17 +65,20 @@ export default function MovieDetails() {
           flexDirection: "column",
           flexWrap: "wrap",
           gap: 4,
-          paddingTop: 10,
         }}
       >
-        {!isLoading && (
+        {/* {!isLoading && (
           <YoutubePlayer
             height={220}
             width={SLIDER_WIDTH}
             play={playing}
-            videoId={"iee2TATGMyI"}
+            // @ts-ignore
+            videoId={videoTRailer ? videoTRailer[0].key : playlist_trailers[0]}
+            playList={playlist_trailers}
+            onChangeState={onStateChange}
           />
-        )}
+        )} */}
+
         <View
           style={{
             display: "flex",
@@ -232,6 +249,7 @@ export default function MovieDetails() {
               borderBottomWidth: 0.4,
               borderBottomColor: Colors[colorScheme ?? "dark"].faintText,
               paddingVertical: 16,
+              width: "100%",
             }}
           >
             <Text
@@ -270,6 +288,112 @@ export default function MovieDetails() {
               )}
             </Text>
           </View>
+          <View
+            style={{
+              borderBottomWidth: 0.4,
+              borderBottomColor: Colors[colorScheme ?? "dark"].faintText,
+              paddingVertical: 12,
+            }}
+          >
+            <ThemedText
+              style={{
+                fontSize: 18,
+                fontWeight: "500",
+                paddingBottom: 8,
+              }}
+              numberOfLines={2}
+            >
+              Staring
+            </ThemedText>
+            <ScrollView
+              contentContainerStyle={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+              }}
+              horizontal
+            >
+              {!isLoading &&
+                tmdbData &&
+                tmdbData?.cast &&
+                tmdbData.cast.map((item: cast) => (
+                  <ProfileCard
+                    cardWidth={130}
+                    key={item.id + item.profile_path}
+                    item={item}
+                  ></ProfileCard>
+                ))}
+            </ScrollView>
+          </View>
+          <View
+            style={{
+              borderBottomWidth: 0.4,
+              borderBottomColor: Colors[colorScheme ?? "dark"].faintText,
+              paddingVertical: 12,
+            }}
+          >
+            <ThemedText
+              style={{
+                fontSize: 18,
+                fontWeight: "500",
+                paddingBottom: 8,
+              }}
+              numberOfLines={2}
+            >
+              Recommendations
+            </ThemedText>
+            <ScrollView
+              contentContainerStyle={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 6,
+              }}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            >
+              {!isLoading &&
+                tmdbData &&
+                tmdbData?.recommendations?.length > 0 &&
+                tmdbData.recommendations.map((item) => (
+                  <MovieCard
+                    cardWidth={130}
+                    key={item.id}
+                    item={item}
+                  ></MovieCard>
+                ))}
+            </ScrollView>
+          </View>
+          {tmdbData?.reviews && tmdbData?.reviews.length > 0 && (
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                gap: 6,
+              }}
+            >
+              <ThemedText
+                style={{
+                  fontSize: 18,
+                  fontWeight: "500",
+                  paddingBottom: 8,
+                }}
+                numberOfLines={2}
+              >
+                Reviews
+              </ThemedText>
+              {!isLoading &&
+                tmdbData &&
+                tmdbData?.reviews &&
+                tmdbData.reviews.map((item: review) => (
+                  <ReviewCard
+                    cardWidth={130}
+                    key={item.id}
+                    item={item}
+                  ></ReviewCard>
+                ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </ThemedView>

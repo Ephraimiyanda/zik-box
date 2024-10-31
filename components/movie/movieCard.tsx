@@ -4,11 +4,20 @@ import { Link } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { movieTypes } from "@/types/movieTypes";
 import { Skeleton } from "@rneui/base";
-export function MovieCard({ item }: { item: movieTypes }) {
+export function MovieCard({
+  item,
+  cardWidth,
+}: {
+  item: movieTypes;
+  cardWidth: number;
+}) {
   const colorScheme = useColorScheme();
   return (
     <Link
-      href={`/movie/${item.id}`}
+      href={{
+        pathname: "/movie/[movieId]",
+        params: { movieId: item.id },
+      }}
       style={{
         position: "relative",
         flexDirection: "column",
@@ -17,20 +26,19 @@ export function MovieCard({ item }: { item: movieTypes }) {
         paddingVertical: 3,
       }}
     >
-      {" "}
       <View key={item.id}>
-        {item.poster_path.length > 0 ? (
+        {item.poster_path ? (
           <Image
             style={{
               minHeight: 170,
               maxHeight: 170,
               height: "100%",
               flex: 1,
-              width: 180,
+              width: cardWidth,
               borderRadius: 10,
               backgroundColor: Colors.active,
               borderColor: Colors.active,
-              maxWidth: 110,
+              maxWidth: cardWidth,
             }}
             contentFit="cover"
             transition={1000}
@@ -43,16 +51,17 @@ export function MovieCard({ item }: { item: movieTypes }) {
               width: "100%",
               height: 170,
               borderRadius: 10,
-              maxWidth: 180,
+              maxWidth: cardWidth,
             }}
           />
         )}
+
         <Text
           style={{
             fontSize: 14,
             fontWeight: "600",
             color: Colors[colorScheme ?? "dark"].text,
-            maxWidth: 100,
+            maxWidth: cardWidth / 1.2,
           }}
           numberOfLines={2}
         >

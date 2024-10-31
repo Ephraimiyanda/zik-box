@@ -40,14 +40,11 @@ export default function Index() {
   const tabTitleStyle = (active: boolean) => {
     return {
       color: active
-        ? colorScheme === "dark"
-          ? Colors.dark.active
-          : Colors.light.active
-        : colorScheme === "dark"
-        ? Colors.dark.text
-        : Colors.light.text,
+        ? Colors[colorScheme ?? "dark"].active
+        : Colors[colorScheme ?? "dark"].text,
       paddingBottom: 0,
       paddingTop: 0,
+      fontSize: 13,
     };
   };
   return (
@@ -93,7 +90,7 @@ export default function Index() {
           paddingBottom: 0,
           paddingLeft: 5,
           paddingRight: 10,
-          height: 38,
+          height: 36,
         }}
         scrollable
       >
