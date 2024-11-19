@@ -13,6 +13,8 @@ import {
 import { ThemedText } from "../ThemedText";
 import { Chip } from "@rneui/base";
 import { colorScheme } from "@/constants/colorScheme";
+import { router } from "expo-router";
+import { CustomChip } from "../chip/chip";
 
 export const SLIDER_WIDTH = Dimensions.get("window").width;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
@@ -25,7 +27,13 @@ export const CarouselCardItem = ({
   index: number;
 }) => {
   return (
-    <View style={styles.container} key={index}>
+    <View
+      style={styles.container}
+      onTouchEnd={() => {
+        router.push(`/movie/${item.id}`);
+      }}
+      key={index}
+    >
       <ImageBackground
         resizeMode="cover"
         source={{
@@ -33,32 +41,11 @@ export const CarouselCardItem = ({
         }}
         style={styles.imgBackground}
       >
-        <Chip
+        <CustomChip
           title={item.vote_average.toFixed(1).toString()}
-          icon={{
-            name: "star-outline",
-            type: "FontAwesome",
-            size: 24,
-            color: "#FF8700",
-          }}
-          titleStyle={{
-            fontWeight: "700",
-            color: "#FF8700",
-            fontSize: 16,
-          }}
-          size="md"
-          containerStyle={{
-            marginVertical: 5,
-            borderRadius: 10,
-            width: 90,
-            marginLeft: "auto",
-            bottom: 0,
-            marginRight: 10,
-            paddingRight: 0,
-          }}
-          color={"	rgba(255, 255, 255, 0.2)"}
-          useForeground
-        />
+          marginLeft={"auto"}
+          marginRight={10}
+        ></CustomChip>
       </ImageBackground>
       <View
         style={{

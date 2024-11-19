@@ -1,36 +1,20 @@
-import React, { useState } from "react";
-import { SearchBar, Tab, TabView } from "@rneui/themed";
+import React, { useEffect, useState } from "react";
+import { SearchBar } from "@rneui/themed";
 import { router } from "expo-router";
-import { View, useColorScheme } from "react-native";
+import { View, useColorScheme, useWindowDimensions } from "react-native";
 import { Colors } from "@/constants/Colors";
 import styles from "@/styles/style";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import TrendingMovies from "../screenTabs/trendingMovies";
 import Category from "../screenTabs/category";
 import { ThemedView } from "@/components/ThemedView";
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 export default function Index() {
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = useState(0);
   const [search, setSearch] = useState("");
-  const [loadedTabs, setLoadedTabs] = useState<boolean[]>([
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
 
-  // Function to mark a tab as loaded the first time it's viewed
-  const markTabAsLoaded = (tabIndex: number) => {
-    setLoadedTabs((prev) => {
-      const updatedTabs = [...prev];
-      updatedTabs[tabIndex] = true;
-      return updatedTabs;
-    });
-  };
-
+  const layout = useWindowDimensions();
   const colorScheme = useColorScheme();
 
   const updateSearch = (search: string) => {
@@ -47,6 +31,65 @@ export default function Index() {
       fontSize: 13,
     };
   };
+
+  //tab routes
+  const routes = [
+    { key: "trending", title: "Trending" },
+    { key: "now playing", title: "Now Playing" },
+    { key: "popular", title: "Popular" },
+    { key: "top rated", title: "Top rated" },
+    { key: "tv series", title: "Tv series" },
+    { key: "top rated series", title: "Top rated series" },
+    { key: "popular series", title: "popular series" },
+  ];
+
+  //conditionally rendering tab views
+  const renderScene = ({ route, jumpTo }: { route: any; jumpTo: any }) => {
+    switch (route.key) {
+      case "trending":
+        return <TrendingMovies />;
+      case "now playing":
+        return <Category category={"Now Playing"} type={"movie"} />;
+      case "popular":
+        return <Category category={"Popular"} type={"movie"} />;
+      case "top rated":
+        return <Category category={"Top Rated"} type={"movie"} />;
+      case "tv series":
+        return <Category category={"Trending"} type={"tv"} />;
+      case "top rated series":
+        return <Category category={"Top rated"} type={"tv"} />;
+      case "popular series":
+        return <Category category={"Popular"} type={"tv"} />;
+    }
+  };
+
+  //render tab bar for tabs view
+  const renderTabBar = (props: any) => (
+    <TabBar
+      {...props}
+      indicatorStyle={{
+        backgroundColor: Colors.active,
+        height: 3,
+        borderRadius: 6,
+      }}
+      tabStyle={{
+        width: "auto",
+      }}
+      labelStyle={tabTitleStyle}
+      scrollEnabled={true}
+      style={{
+        backgroundColor: "transparent",
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingLeft: 5,
+        paddingRight: 10,
+        height: 36,
+      }}
+      activeColor={Colors[colorScheme ?? "dark"].active}
+      inactiveColor={Colors[colorScheme ?? "dark"].text}
+    />
+  );
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.flatContainer}>
@@ -75,88 +118,14 @@ export default function Index() {
           }
         />
       </View>
-
-      <Tab
-        value={index}
-        onChange={setIndex}
-        indicatorStyle={{
-          backgroundColor: Colors.active,
-          height: 3,
-          borderRadius: 6,
-        }}
-        variant="default"
-        style={{
-          paddingTop: 0,
-          paddingBottom: 0,
-          paddingLeft: 5,
-          paddingRight: 10,
-          height: 36,
-        }}
-        scrollable
-      >
-        <Tab.Item title="Trending" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Now Playing" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Popular" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Top Rated" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Tv series" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Top Rated series" titleStyle={tabTitleStyle} />
-        <Tab.Item title="Popular series" titleStyle={tabTitleStyle} />
-      </Tab>
-
       <TabView
-        value={index}
-        onChange={(newIndex) => {
-          setIndex(newIndex);
-          markTabAsLoaded(newIndex); // Mark the tab as loaded when you switch to it
-        }}
-        animationType="spring"
-      >
-        {/* Trending Movies Tab */}
-        <TabView.Item style={{ width: "100%", height: "100%" }}>
-          {loadedTabs[0] && <TrendingMovies />}
-          {/* Already loaded */}
-        </TabView.Item>
-
-        {/* Now Playing Movies Tab */}
-        <TabView.Item>
-          {loadedTabs[1] ? (
-            <Category category={"Now Playing"} type={"movie"} />
-          ) : null}
-        </TabView.Item>
-
-        {/* Popular Movies Tab */}
-        <TabView.Item>
-          {loadedTabs[2] ? (
-            <Category category={"Popular"} type={"movie"} />
-          ) : null}
-        </TabView.Item>
-
-        {/* Top Rated Movies Tab */}
-        <TabView.Item>
-          {loadedTabs[3] ? (
-            <Category category={"Top Rated"} type={"movie"} />
-          ) : null}
-        </TabView.Item>
-
-        {/* Trending TV Tab */}
-        <TabView.Item>
-          {loadedTabs[4] ? (
-            <Category category={"Trending"} type={"tv"} />
-          ) : null}
-        </TabView.Item>
-
-        {/* Top Rated TV Tab */}
-        <TabView.Item>
-          {loadedTabs[5] ? (
-            <Category category={"Top Rated"} type={"tv"} />
-          ) : null}
-        </TabView.Item>
-
-        {/* Popular TV Tab */}
-        <TabView.Item>
-          {loadedTabs[6] ? <Category category={"Popular"} type={"tv"} /> : null}
-        </TabView.Item>
-      </TabView>
+        renderTabBar={renderTabBar}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        lazy={true}
+      />
     </ThemedView>
   );
 }

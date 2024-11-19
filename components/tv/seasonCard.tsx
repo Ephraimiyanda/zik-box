@@ -1,35 +1,33 @@
 import { View, Text, useColorScheme } from "react-native";
-import { Image } from "expo-image";
-import { Link, useRouter } from "expo-router";
+import { Image, ImageBackground } from "expo-image";
+import { Link } from "expo-router";
 import { Colors } from "@/constants/Colors";
-import { movieTypes } from "@/types/movieTypes";
-import { Skeleton } from "@rneui/base";
-import { TouchableOpacity } from "react-native";
-export function MovieCard({
+import { movieTypes, season } from "@/types/movieTypes";
+import { Chip, Skeleton } from "@rneui/base";
+import { CustomChip } from "../chip/chip";
+export function SeasonCard({
   item,
   cardWidth,
 }: {
-  item: movieTypes;
+  item: season;
   cardWidth: number;
 }) {
   const colorScheme = useColorScheme();
-  const router = useRouter();
   return (
-    <TouchableOpacity
-      onPress={() => {
-        router.push(`/movie/${item.id}`);
-      }}
+    <Link
+      //@ts-ignore
+      href={"#"}
       style={{
+        position: "relative",
         flexDirection: "column",
         display: "flex",
         gap: 3,
         paddingVertical: 3,
-        marginHorizontal: "auto",
       }}
     >
       <View key={item.id}>
         {item.poster_path ? (
-          <Image
+          <ImageBackground
             style={{
               minHeight: 170,
               maxHeight: 170,
@@ -40,11 +38,23 @@ export function MovieCard({
               backgroundColor: Colors.active,
               borderColor: Colors.active,
               maxWidth: cardWidth,
+              display: "flex",
+              justifyContent: "flex-start",
             }}
             contentFit="cover"
             transition={1000}
             source={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
-          />
+          >
+            <CustomChip
+              title={item.vote_average.toFixed(1).toString()}
+              fontSize={14}
+              marginLeft={"auto"}
+              marginRight={10}
+              size="sm"
+              iconSize={20}
+              width={70}
+            ></CustomChip>
+          </ImageBackground>
         ) : (
           <Skeleton
             style={{
@@ -66,9 +76,9 @@ export function MovieCard({
           }}
           numberOfLines={2}
         >
-          {item.title ? item.title : item.name}
+          {"season" + " " + item.season_number}
         </Text>
       </View>
-    </TouchableOpacity>
+    </Link>
   );
 }

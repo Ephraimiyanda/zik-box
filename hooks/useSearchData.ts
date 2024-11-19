@@ -1,40 +1,29 @@
 import { useEffect, useState } from "react";
+import { useDebounceValue } from "./useDebounceValue";
 
-export function useFetchData(urls: string[]) {
+export function useSearch(query: string, page: number) {
   const [data, setData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const searchQuery = useDebounceValue(query, 1500);
 
   const API_ROUTE = process.env.EXPO_PUBLIC_API_ROUTE;
   const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
-
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Fetch all URLs in parallel
-      const responses = await Promise.all(
-        urls.map((url: string) =>
-          fetch(`${API_ROUTE}/${url}`, {
-            headers: {
-              AUTHORIZATION: "Bearer " + API_KEY,
-            },
-          })
-        )
+      // Fetch results
+      const response = await fetch(
+        `${API_ROUTE}/search/multi?query=${searchQuery}&include_adult=false&language=en-US&page=${page}`,
+        {
+          headers: {
+            AUTHORIZATION: "Bearer " + API_KEY,
+          },
+        }
       );
-
-      // Ensure all responses are okay before proceeding
-      const jsonData: any = await Promise.all(
-        responses.map((response) => {
-          if (!response.ok) {
-            setError(true);
-          }
-          return response.json();
-        })
-      );
-
-      if (jsonData) {
-        setData(jsonData);
-        setIsLoading(false);
+      const resData = await response.json();
+      if (response.ok) {
+        setData(resData.results);
       }
     } catch (err) {
       setError(true);
@@ -46,10 +35,10 @@ export function useFetchData(urls: string[]) {
   };
 
   useEffect(() => {
-    if (urls.length > 0) {
+    if (searchQuery.length > 2) {
       fetchData();
     }
-  }, [urls]);
+  }, [searchQuery, page]);
 
   // Return the data, loading, and error states
   return { data, isLoading, error };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
 import * as Network from "expo-network";
 import { useFetchData } from "@/hooks/useFetchData";
@@ -9,6 +9,8 @@ import ButtonFlatList from "@/components/butons/buttonList";
 import { CountryCodes } from "@/constants/lists";
 import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
+import { FlashList } from "@shopify/flash-list";
+import { TvCard } from "@/components/tv/tvCard";
 
 export default function Category({
   category,
@@ -54,12 +56,12 @@ export default function Category({
   // Handle incoming data when it's available
   useEffect(() => {
     if (data && data[0]?.results) {
-      const uniqueTrendingWeekMovie = [
+      const uniqueMovieData = [
         ...new Map(
           data[0].results.map((item: any) => [item.id, item])
         ).values(),
       ] as movieTypes[];
-      setMovieData((prev) => [...prev, ...uniqueTrendingWeekMovie]);
+      setMovieData((prev) => [...prev, ...uniqueMovieData]);
     }
   }, [data]);
 
@@ -72,7 +74,7 @@ export default function Category({
   const infiniteScrolling = () => {
     if (data && data[0]?.total_pages > page && !infiniteLoading) {
       setInfiteLoading(true);
-      setPage((prev) => prev + 1);
+      setPage(page + 1);
     }
   };
 
@@ -83,12 +85,18 @@ export default function Category({
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    if (!isLoading) {
-      setInfiteLoading(false);
-    }
-  }, [isLoading]);
-
+  const renderMovieItem = useCallback(
+    ({ item }: { item: movieTypes }) => (
+      <MovieCard cardWidth={110} item={item} key={item.id} />
+    ),
+    []
+  );
+  const renderTvItem = useCallback(
+    ({ item }: { item: movieTypes }) => (
+      <TvCard cardWidth={110} item={item} key={item.id} />
+    ),
+    []
+  );
   if (isLoading && page === 1) {
     return (
       <ScrollView
@@ -113,57 +121,43 @@ export default function Category({
   }
 
   return (
-    <ScrollView
-      onScrollEndDrag={infiniteScrolling}
+    <View
       style={{
         paddingHorizontal: 4,
         paddingVertical: 4,
         display: "flex",
-      }}
-      contentContainerStyle={{
-        display: "flex",
-        justifyContent: "space-around",
         flexDirection: "column",
-        flexWrap: "wrap",
-        gap: 4,
-        paddingBottom: 20,
+        width: "100%",
+        height: "100%",
       }}
     >
-      {!isLoading && (
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            gap: 2,
-          }}
-        >
+      <FlashList
+        onEndReached={infiniteScrolling}
+        keyExtractor={(item, index) => item.id.toString() + index}
+        estimatedItemSize={20 * page}
+        ListHeaderComponent={
           <ButtonFlatList
             buttons={CountryCodes}
             selectedButton={selectedCountryCode}
             setSelectedButton={setSelectedCountryCode}
           ></ButtonFlatList>
-        </View>
-      )}
-      <FlatList
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          width: "100%",
-          gap: 3,
-        }}
+        }
+        onEndReachedThreshold={1}
+        numColumns={3}
+        horizontal={false}
         data={movieData}
-        renderItem={({ item }) => (
-          <MovieCard cardWidth={110} key={item.id} item={item}></MovieCard>
-        )}
-      ></FlatList>
-      <ActivityIndicator
-        size="small"
-        color={Colors.active}
-        animating={infiniteLoading}
-      />
-    </ScrollView>
+        renderItem={type === "movie" ? renderMovieItem : renderTvItem}
+        ListFooterComponent={
+          <ActivityIndicator
+            size="large"
+            color={Colors.active}
+            animating={infiniteLoading}
+            style={{
+              marginBottom: 20,
+            }}
+          />
+        }
+      ></FlashList>
+    </View>
   );
 }

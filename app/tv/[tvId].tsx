@@ -1,16 +1,8 @@
 import styles from "@/styles/style";
-import {
-  Alert,
-  ScrollView,
-  View,
-  Text,
-  useColorScheme,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, View, Text, useColorScheme, FlatList } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
-import { useFetchDetails } from "@/hooks/useFetchDetails";
+import { useFetchSeriesDetails } from "@/hooks/useFetchseriesDetails";
 import React, { useCallback, useState } from "react";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { SLIDER_WIDTH } from "@/components/carousel/carouselItem";
@@ -18,17 +10,19 @@ import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { cast, movieTypes, review } from "@/types/movieTypes";
+import { cast, review, season } from "@/types/movieTypes";
 import { MovieCard } from "@/components/movie/movieCard";
 import { MovieDetailLoader } from "@/components/loaders/movieDetailLoader";
 import { ProfileCard } from "@/components/profile/profileCard";
 import { ReviewCard } from "@/components/review/reviewCard";
+import { SeasonCard } from "@/components/tv/seasonCard";
+import { TvCard } from "@/components/tv/tvCard";
 
-export default function MovieDetails() {
-  const { movieId } = useLocalSearchParams();
+export default function SeriesDetails() {
+  const { tvId } = useLocalSearchParams();
   const [playing, setPlaying] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-  const { tmdbData, ytsData, isLoading, error } = useFetchDetails(movieId);
+  const { tmdbData, ytsData, isLoading, error } = useFetchSeriesDetails(tvId);
   const colorScheme = useColorScheme();
 
   const onStateChange = useCallback((state: string) => {
@@ -41,6 +35,7 @@ export default function MovieDetails() {
     setShowFullText((prev) => !prev);
   };
 
+  //get official trailer
   const videoTRailer = tmdbData?.videos?.filter(
     (video) =>
       video.official && video.name.toLowerCase().includes("official trailer")
@@ -55,7 +50,6 @@ export default function MovieDetails() {
       : playlist_trailers && playlist_trailers.length > 0
       ? playlist_trailers[0]
       : null;
-
   const previewText = tmdbData?.overview?.slice(0, 200);
 
   //return loading screen
@@ -167,7 +161,6 @@ export default function MovieDetails() {
             style={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between",
               gap: 16,
               borderBottomWidth: 0.4,
               borderBottomColor: Colors[colorScheme ?? "dark"].faintText,
@@ -190,7 +183,7 @@ export default function MovieDetails() {
                 }}
                 numberOfLines={2}
               >
-                Release date
+                Airing date
               </ThemedText>
               <Text
                 style={{
@@ -198,8 +191,8 @@ export default function MovieDetails() {
                   fontWeight: "500",
                 }}
               >
-                {tmdbData?.release_date &&
-                  new Date(tmdbData?.release_date).toDateString()}
+                {tmdbData?.first_air_date &&
+                  new Date(tmdbData?.first_air_date).toDateString()}
               </Text>
             </View>
             <View
@@ -295,6 +288,47 @@ export default function MovieDetails() {
               )}
             </Text>
           </View>
+
+          <View
+            style={{
+              borderBottomWidth: 0.4,
+              borderBottomColor: Colors[colorScheme ?? "dark"].faintText,
+              paddingVertical: 12,
+            }}
+          >
+            <ThemedText
+              style={{
+                fontSize: 18,
+                fontWeight: "500",
+                paddingBottom: 8,
+              }}
+              numberOfLines={2}
+            >
+              Seasons
+            </ThemedText>
+            <ScrollView
+              contentContainerStyle={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+              }}
+              horizontal
+            >
+              {!isLoading &&
+                tmdbData &&
+                tmdbData?.seasons &&
+                tmdbData.seasons
+                  .filter((item) => item.season_number !== 0)
+                  .map((item: season) => (
+                    <SeasonCard
+                      cardWidth={130}
+                      key={item.id + item.poster_path}
+                      item={item}
+                    ></SeasonCard>
+                  ))}
+            </ScrollView>
+          </View>
+
           <View
             style={{
               borderBottomWidth: 0.4,
@@ -332,46 +366,40 @@ export default function MovieDetails() {
                 ))}
             </ScrollView>
           </View>
-          {tmdbData && tmdbData?.recommendations?.length > 0 && (
-            <View
+          <View
+            style={{
+              borderBottomWidth: 0.4,
+              borderBottomColor: Colors[colorScheme ?? "dark"].faintText,
+              paddingVertical: 12,
+            }}
+          >
+            <ThemedText
               style={{
-                borderBottomWidth: 0.4,
-                borderBottomColor: Colors[colorScheme ?? "dark"].faintText,
-                paddingVertical: 12,
+                fontSize: 18,
+                fontWeight: "500",
+                paddingBottom: 8,
               }}
+              numberOfLines={2}
             >
-              <ThemedText
-                style={{
-                  fontSize: 18,
-                  fontWeight: "500",
-                  paddingBottom: 8,
-                }}
-                numberOfLines={2}
-              >
-                Recommendations
-              </ThemedText>
-              <ScrollView
-                contentContainerStyle={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 6,
-                }}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              >
-                {!isLoading &&
-                  tmdbData &&
-                  tmdbData?.recommendations?.length > 0 &&
-                  tmdbData.recommendations.map((item) => (
-                    <MovieCard
-                      cardWidth={130}
-                      key={item.id}
-                      item={item}
-                    ></MovieCard>
-                  ))}
-              </ScrollView>
-            </View>
-          )}
+              Recommendations
+            </ThemedText>
+            <ScrollView
+              contentContainerStyle={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 6,
+              }}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            >
+              {!isLoading &&
+                tmdbData &&
+                tmdbData?.recommendations?.length > 0 &&
+                tmdbData.recommendations.map((item) => (
+                  <TvCard cardWidth={130} key={item.id} item={item}></TvCard>
+                ))}
+            </ScrollView>
+          </View>
           {tmdbData?.reviews && tmdbData?.reviews.length > 0 && (
             <View
               style={{

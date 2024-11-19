@@ -1,12 +1,32 @@
-import { View, Text, useColorScheme, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  useColorScheme,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
-
-export function SearchCard() {
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { searchCard } from "@/types/movieTypes";
+export function SearchCard({ item }: { item: Partial<searchCard> }) {
   const colorScheme = useColorScheme();
+  const router = useRouter();
+
+  //navigate to movies or tv page
+  function navigate() {
+    if (item.media_type === "movie") {
+      router.push(`/movie/${item.id}`);
+    } else if (item.media_type === "tv") {
+      router.push(`/tv/${item.id}`);
+    }
+  }
   return (
-    <View
+    <TouchableOpacity
+      onPress={navigate}
       style={{
         position: "relative",
         width: "100%",
@@ -14,13 +34,14 @@ export function SearchCard() {
         justifyContent: "space-between",
         flexDirection: "row",
         gap: 4,
+        paddingVertical: 4,
       }}
     >
       <Image
         style={{
           flex: 1,
-          width: 55,
-          height: 55,
+          width: 60,
+          height: 60,
           borderRadius: 10,
           backgroundColor: Colors.active,
           borderColor: Colors.active,
@@ -29,27 +50,57 @@ export function SearchCard() {
         contentFit="cover"
         transition={1000}
         accessible
-        source="https://nkiri.com/wp-content/uploads/2021/11/hawkeye-hollywood-series.jpg"
+        source={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
+        placeholder={require("../../assets/images/no-poster-2.jpg")}
       />
       <View
         style={{
           display: "flex",
           justifyContent: "space-around",
-                  gap: 4,
-          width:"82%"
+          gap: 5,
+          width: "82%",
         }}
       >
-        <Text
-          style={[
-            style.text,
-            {
-              color: Colors[colorScheme ?? "dark"].text,
-            },
-          ]}
-          numberOfLines={1}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            gap: 3,
+            width: "82%",
+          }}
         >
-          Pranshu Chittora
-        </Text>
+          {item.media_type === "movie" ? (
+            <MaterialCommunityIcons
+              name="movie-open-outline"
+              size={18}
+              color={Colors[colorScheme ?? "dark"].active}
+            />
+          ) : item.media_type === "tv" ? (
+            <Feather
+              name="tv"
+              size={18}
+              color={Colors[colorScheme ?? "dark"].active}
+            />
+          ) : item.media_type === "person" ? (
+            <Ionicons
+              name="person-outline"
+              size={18}
+              color={Colors[colorScheme ?? "dark"].active}
+            />
+          ) : null}
+          <Text
+            style={[
+              style.text,
+              {
+                color: Colors[colorScheme ?? "dark"].text,
+              },
+            ]}
+            numberOfLines={1}
+          >
+            {item.original_name ?? item.original_title}
+          </Text>
+        </View>
         <Text
           style={[
             style.text,
@@ -59,10 +110,10 @@ export function SearchCard() {
           ]}
           numberOfLines={1}
         >
-          Pranshu Chitt oragxf mmmvngh mmmmmmmmmmmm
+          {item.overview ?? "known for" + " " + item.known_for_department}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

@@ -8,6 +8,7 @@ export interface movieTypes {
   overview: string;
   vote_average: number;
   name?: string;
+  original_name?: string;
 }
 export interface Genre {
   id: number;
@@ -35,6 +36,16 @@ export interface review {
   };
   content: string;
 }
+export interface season {
+  air_date: string;
+  episode_count: number;
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string;
+  season_number: number;
+  vote_average: number;
+}
 export interface tmdbData {
   budget: number;
   genres: Genre[];
@@ -50,4 +61,13 @@ export interface tmdbData {
   tagline: string;
   status: string;
   vote_average: number;
+}
+export interface tmdbTvData extends tmdbData {
+  first_air_date: string;
+  seasons: season[];
+}
+export interface searchCard extends movieTypes {
+  media_type: string;
+  original_title: string;
+  known_for_department: string;
 }

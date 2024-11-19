@@ -1,16 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SearchBar, Tab, TabView } from "@rneui/themed";
 import { Link, useFocusEffect } from "expo-router";
-import { Pressable, Text, TextInput, View, useColorScheme } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  useColorScheme,
+} from "react-native";
 import { Colors } from "@/constants/Colors";
 import styles from "@/styles/style";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ThemedView } from "@/components/ThemedView";
+import { SearchCard } from "@/components/search/searchCard";
+import { useSearch } from "@/hooks/useSearchData";
+import { FlashList } from "@shopify/flash-list";
+import { searchCard } from "@/types/movieTypes";
 
 export default function Search() {
-  const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const colorScheme = useColorScheme();
   const searchBarRef = useRef<TextInput>(null);
+  const [page, setPage] = useState(1);
+  const [infiniteLoading, setInfiteLoading] = useState(false);
 
   // Focus on the SearchBar when the page is opened
   useFocusEffect(() => {
@@ -20,8 +34,26 @@ export default function Search() {
   });
 
   const updateSearch = (search: string) => {
-    setSearch(search);
+    setSearchQuery(search);
   };
+
+  //render search items
+  const renderSearchItem = useCallback(
+    ({ item }: { item: searchCard }) => (
+      <SearchCard item={item} key={item.id} />
+    ),
+    []
+  );
+
+  // Infinite scrolling function
+  const infiniteScrolling = () => {
+    if (data && data[0]?.total_pages > page && !infiniteLoading) {
+      setInfiteLoading(true);
+      setPage(page + 1);
+    }
+  };
+
+  const { data, isLoading, error } = useSearch(searchQuery, page);
 
   return (
     <ThemedView style={styles.container}>
@@ -38,7 +70,7 @@ export default function Search() {
         <SearchBar
           placeholder="Search here..."
           onChangeText={updateSearch}
-          value={search}
+          value={searchQuery}
           containerStyle={[styles.searchBarContainerStyle]}
           inputContainerStyle={{
             backgroundColor: Colors[colorScheme ?? "dark"].fadeColor,
@@ -62,7 +94,7 @@ export default function Search() {
           }
         />
 
-        {search.length > 0 && (
+        {searchQuery.length > 0 && (
           <Pressable
             style={[
               {
@@ -72,9 +104,7 @@ export default function Search() {
               },
               styles.center,
             ]}
-            onPress={() => {
-              setSearch("");
-            }}
+            onPress={() => {}}
           >
             <Text
               style={{
@@ -91,6 +121,37 @@ export default function Search() {
           </Pressable>
         )}
       </View>
+
+      <FlashList
+        onEndReached={infiniteScrolling}
+        keyExtractor={(item, index) => item.id.toString() + index}
+        estimatedItemSize={20 * page}
+        renderItem={renderSearchItem}
+        data={data}
+        contentContainerStyle={{
+          paddingHorizontal: 12,
+        }}
+        ListFooterComponent={
+          <ActivityIndicator
+            size="large"
+            color={Colors.active}
+            animating={infiniteLoading}
+            style={{
+              marginBottom: 20,
+            }}
+          />
+        }
+      ></FlashList>
+      {isLoading && (
+        <ActivityIndicator
+          size="large"
+          color={Colors.active}
+          animating={infiniteLoading}
+          style={{
+            marginBottom: 20,
+          }}
+        />
+      )}
     </ThemedView>
   );
 }

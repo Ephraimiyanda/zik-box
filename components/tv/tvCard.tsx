@@ -1,11 +1,10 @@
 import { View, Text, useColorScheme } from "react-native";
 import { Image } from "expo-image";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { movieTypes } from "@/types/movieTypes";
 import { Skeleton } from "@rneui/base";
-import { TouchableOpacity } from "react-native";
-export function MovieCard({
+export function TvCard({
   item,
   cardWidth,
 }: {
@@ -13,11 +12,11 @@ export function MovieCard({
   cardWidth: number;
 }) {
   const colorScheme = useColorScheme();
-  const router = useRouter();
   return (
-    <TouchableOpacity
-      onPress={() => {
-        router.push(`/movie/${item.id}`);
+    <Link
+      href={{
+        pathname: "/tv/[tvId]",
+        params: { tvId: item.id },
       }}
       style={{
         flexDirection: "column",
@@ -69,6 +68,6 @@ export function MovieCard({
           {item.title ? item.title : item.name}
         </Text>
       </View>
-    </TouchableOpacity>
+    </Link>
   );
 }

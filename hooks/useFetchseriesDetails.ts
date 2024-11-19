@@ -1,8 +1,8 @@
-import { tmdbData } from "@/types/movieTypes";
+import { tmdbData, tmdbTvData } from "@/types/movieTypes";
 import { useEffect, useState } from "react";
 
-export function useFetchDetails(movieId: string | string[]) {
-  const [tmdbData, setTmdbData] = useState<tmdbData>();
+export function useFetchSeriesDetails(seriesId: string | string[]) {
+  const [tmdbData, setTmdbData] = useState<tmdbTvData>();
   const [ytsData, setYtsData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -26,11 +26,11 @@ export function useFetchDetails(movieId: string | string[]) {
 
   const fetchTmdbData = async () => {
     const urls = [
-      `movie/${movieId}?language=en-US`,
-      `movie/${movieId}/recommendations?language=en-US&page=1`,
-      `movie/${movieId}/videos`,
-      `movie/${movieId}/credits?language=en-US`,
-      `movie/${movieId}/reviews?language=en-US&page=1`,
+      `tv/${seriesId}?language=en-US`,
+      `tv/${seriesId}/recommendations?language=en-US&page=1`,
+      `tv/${seriesId}/videos`,
+      `tv/${seriesId}/credits?language=en-US`,
+      `tv/${seriesId}/reviews?language=en-US&page=1`,
     ];
     setIsLoading(true);
     try {
@@ -76,9 +76,7 @@ export function useFetchDetails(movieId: string | string[]) {
   };
 
   useEffect(() => {
-    if (movieId) {
-      fetchTmdbData();
-    }
+    fetchTmdbData();
   }, []);
 
   // Return the data, loading, and error states
