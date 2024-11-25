@@ -9,6 +9,9 @@ export function useFetchData(urls: string[]) {
   const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 
   const fetchData = async () => {
+    if (error) {
+      setError(false);
+    }
     setIsLoading(true);
     try {
       // Fetch all URLs in parallel
@@ -52,5 +55,5 @@ export function useFetchData(urls: string[]) {
   }, [urls]);
 
   // Return the data, loading, and error states
-  return { data, isLoading, error };
+  return { data, isLoading, error, fetchData };
 }

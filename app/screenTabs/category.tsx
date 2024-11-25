@@ -11,6 +11,8 @@ import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
 import { FlashList } from "@shopify/flash-list";
 import { TvCard } from "@/components/tv/tvCard";
+import { ErrorBoundaryProps } from "expo-router";
+import NetworkError from "@/components/networkError/networkError";
 
 export default function Category({
   category,
@@ -40,7 +42,7 @@ export default function Category({
   }, [selectedCountryCode, page]);
 
   //get parameters from hook
-  const { data, isLoading, error } = useFetchData(urls);
+  const { data, isLoading, error, fetchData } = useFetchData(urls);
 
   //get past 10 years
   function getLastTenYears() {
@@ -65,11 +67,6 @@ export default function Category({
     }
   }, [data]);
 
-  const isConnected = async () => {
-    const connected = await Network.getNetworkStateAsync();
-    return connected.isConnected;
-  };
-
   // Infinite scrolling function
   const infiniteScrolling = () => {
     if (data && data[0]?.total_pages > page && !infiniteLoading) {
@@ -85,18 +82,23 @@ export default function Category({
     }
   }, [isLoading]);
 
+  //render movie item
   const renderMovieItem = useCallback(
     ({ item }: { item: movieTypes }) => (
       <MovieCard cardWidth={110} item={item} key={item.id} />
     ),
     []
   );
+
+  //render tv item
   const renderTvItem = useCallback(
     ({ item }: { item: movieTypes }) => (
       <TvCard cardWidth={110} item={item} key={item.id} />
     ),
     []
   );
+
+  //return loadin screen
   if (isLoading && page === 1) {
     return (
       <ScrollView
@@ -127,6 +129,8 @@ export default function Category({
         paddingVertical: 4,
         display: "flex",
         flexDirection: "column",
+        justifyContent: "center",
+        alignContent: "center",
         width: "100%",
         height: "100%",
       }}
@@ -158,6 +162,7 @@ export default function Category({
           />
         }
       ></FlashList>
+      {error && <NetworkError onRetry={fetchData} />}
     </View>
   );
 }

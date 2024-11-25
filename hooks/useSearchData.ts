@@ -9,8 +9,13 @@ export function useSearch(query: string, page: number) {
 
   const API_ROUTE = process.env.EXPO_PUBLIC_API_ROUTE;
   const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
+
+  //fetch data function
   const fetchData = async () => {
     setIsLoading(true);
+    if (error) {
+      setError(false);
+    }
     try {
       // Fetch results
       const response = await fetch(
@@ -34,12 +39,16 @@ export function useSearch(query: string, page: number) {
     }
   };
 
-  useEffect(() => {
+  //run fetch data
+  function runFetchData() {
     if (searchQuery.length > 2) {
       fetchData();
     }
+  }
+  useEffect(() => {
+    runFetchData();
   }, [searchQuery, page]);
 
   // Return the data, loading, and error states
-  return { data, isLoading, error };
+  return { data, isLoading, error, runFetchData };
 }

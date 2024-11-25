@@ -37,8 +37,8 @@ export function MovieCard({
               flex: 1,
               width: cardWidth,
               borderRadius: 10,
-              backgroundColor: Colors.active,
-              borderColor: Colors.active,
+              backgroundColor: "transparent",
+              borderColor: "transparent",
               maxWidth: cardWidth,
             }}
             contentFit="cover"

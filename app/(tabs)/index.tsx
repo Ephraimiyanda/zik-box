@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SearchBar } from "@rneui/themed";
 import { router } from "expo-router";
 import { View, useColorScheme, useWindowDimensions } from "react-native";
@@ -40,7 +40,7 @@ export default function Index() {
     { key: "top rated", title: "Top rated" },
     { key: "tv series", title: "Tv series" },
     { key: "top rated series", title: "Top rated series" },
-    { key: "popular series", title: "popular series" },
+    { key: "popular series", title: "Popular series" },
   ];
 
   //conditionally rendering tab views

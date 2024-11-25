@@ -2,7 +2,7 @@ import styles from "@/styles/style";
 import { ScrollView, View, Text, useColorScheme, FlatList } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
-import { useFetchSeriesDetails } from "@/hooks/useFetchseriesDetails";
+import { useFetchTvDetails } from "@/hooks/useFetchTvDetails";
 import React, { useCallback, useState } from "react";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { SLIDER_WIDTH } from "@/components/carousel/carouselItem";
@@ -11,7 +11,6 @@ import { Colors } from "@/constants/Colors";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { cast, review, season } from "@/types/movieTypes";
-import { MovieCard } from "@/components/movie/movieCard";
 import { MovieDetailLoader } from "@/components/loaders/movieDetailLoader";
 import { ProfileCard } from "@/components/profile/profileCard";
 import { ReviewCard } from "@/components/review/reviewCard";
@@ -22,7 +21,7 @@ export default function SeriesDetails() {
   const { tvId } = useLocalSearchParams();
   const [playing, setPlaying] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-  const { tmdbData, ytsData, isLoading, error } = useFetchSeriesDetails(tvId);
+  const { tmdbData, ytsData, isLoading, error } = useFetchTvDetails(tvId);
   const colorScheme = useColorScheme();
 
   const onStateChange = useCallback((state: string) => {

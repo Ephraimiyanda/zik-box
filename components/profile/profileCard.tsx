@@ -46,8 +46,6 @@ export function ProfileCard({
             flex: 1,
             width: 100,
             borderRadius: 50,
-            backgroundColor: Colors.active,
-            borderColor: Colors.active,
             maxWidth: cardWidth,
           }}
           contentFit="cover"

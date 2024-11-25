@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
-import * as Network from "expo-network";
+
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import {
   CarouselCardItem,
@@ -13,7 +13,12 @@ import { MovieCard } from "@/components/movie/movieCard";
 import { movieTypes } from "@/types/movieTypes";
 import { Colors } from "@/constants/Colors";
 import { FlashList } from "@shopify/flash-list";
+import NetworkError from "@/components/networkError/networkError";
+import { ErrorBoundaryProps } from "expo-router";
 
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <NetworkError onRetry={retry} />;
+}
 export default function TrendingMovies() {
   const [trendingWeekMovieData, setTrendingWeekMovieData] = useState<
     movieTypes[]
@@ -34,7 +39,7 @@ export default function TrendingMovies() {
     ]);
   }, [page]);
 
-  const { data, isLoading, error } = useFetchData(urls);
+  const { data, isLoading, error, fetchData } = useFetchData(urls);
 
   // Handle incoming data when it's available
   useEffect(() => {
@@ -53,11 +58,6 @@ export default function TrendingMovies() {
       setTrendingWeekMovieData((prev) => [...prev, ...uniqueTrendingWeekMovie]);
     }
   }, [data]);
-
-  const isConnected = async () => {
-    const connected = await Network.getNetworkStateAsync();
-    return connected.isConnected;
-  };
 
   // Infinite scrolling function
   const infiniteScrolling = () => {
@@ -192,6 +192,7 @@ export default function TrendingMovies() {
           />
         }
       ></FlashList>
+      {error && <NetworkError onRetry={fetchData} />}
     </View>
   );
 }

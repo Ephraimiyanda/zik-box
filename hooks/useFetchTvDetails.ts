@@ -1,7 +1,7 @@
 import { tmdbData, tmdbTvData } from "@/types/movieTypes";
 import { useEffect, useState } from "react";
 
-export function useFetchSeriesDetails(seriesId: string | string[]) {
+export function useFetchTvDetails(seriesId: string | string[]) {
   const [tmdbData, setTmdbData] = useState<tmdbTvData>();
   const [ytsData, setYtsData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +33,9 @@ export function useFetchSeriesDetails(seriesId: string | string[]) {
       `tv/${seriesId}/reviews?language=en-US&page=1`,
     ];
     setIsLoading(true);
+    if (error) {
+      setError(false);
+    }
     try {
       // Fetch all URLs in parallel
       const responses = await Promise.all(
@@ -80,5 +83,5 @@ export function useFetchSeriesDetails(seriesId: string | string[]) {
   }, []);
 
   // Return the data, loading, and error states
-  return { tmdbData, ytsData, isLoading, error };
+  return { tmdbData, ytsData, isLoading, error, fetchTmdbData };
 }

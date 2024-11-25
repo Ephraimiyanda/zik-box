@@ -18,6 +18,8 @@ import { SearchCard } from "@/components/search/searchCard";
 import { useSearch } from "@/hooks/useSearchData";
 import { FlashList } from "@shopify/flash-list";
 import { searchCard } from "@/types/movieTypes";
+import { SearchLoader } from "@/components/loaders/searchLoader";
+import NetworkError from "@/components/networkError/networkError";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,7 +55,7 @@ export default function Search() {
     }
   };
 
-  const { data, isLoading, error } = useSearch(searchQuery, page);
+  const { data, isLoading, error, runFetchData } = useSearch(searchQuery, page);
 
   return (
     <ThemedView style={styles.container}>
@@ -122,36 +124,51 @@ export default function Search() {
         )}
       </View>
 
-      <FlashList
-        onEndReached={infiniteScrolling}
-        keyExtractor={(item, index) => item.id.toString() + index}
-        estimatedItemSize={20 * page}
-        renderItem={renderSearchItem}
-        data={data}
-        contentContainerStyle={{
-          paddingHorizontal: 12,
-        }}
-        ListFooterComponent={
-          <ActivityIndicator
-            size="large"
-            color={Colors.active}
-            animating={infiniteLoading}
-            style={{
-              marginBottom: 20,
-            }}
-          />
-        }
-      ></FlashList>
-      {isLoading && (
-        <ActivityIndicator
-          size="large"
-          color={Colors.active}
-          animating={infiniteLoading}
-          style={{
-            marginBottom: 20,
+      {searchQuery.length >= 1 && !isLoading && !error && (
+        <FlashList
+          onEndReached={infiniteScrolling}
+          keyExtractor={(item, index) => item.id.toString() + index}
+          estimatedItemSize={20 * page}
+          renderItem={renderSearchItem}
+          data={data}
+          contentContainerStyle={{
+            paddingHorizontal: 12,
           }}
-        />
+          ListEmptyComponent={
+            <View
+              style={[
+                styles.flatContainer,
+                {
+                  height: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color: Colors[colorScheme ?? "dark"].active,
+                }}
+              >
+                No results were found for your search
+              </Text>
+            </View>
+          }
+          ListFooterComponent={
+            <ActivityIndicator
+              size="large"
+              color={Colors.active}
+              animating={infiniteLoading}
+              style={{
+                marginBottom: 20,
+              }}
+            />
+          }
+        ></FlashList>
       )}
+
+      {error && <NetworkError onRetry={runFetchData} />}
+      {isLoading && searchQuery.length > 1 && <SearchLoader />}
     </ThemedView>
   );
 }

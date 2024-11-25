@@ -23,12 +23,14 @@ import { MovieCard } from "@/components/movie/movieCard";
 import { MovieDetailLoader } from "@/components/loaders/movieDetailLoader";
 import { ProfileCard } from "@/components/profile/profileCard";
 import { ReviewCard } from "@/components/review/reviewCard";
+import NetworkError from "@/components/networkError/networkError";
 
 export default function MovieDetails() {
   const { movieId } = useLocalSearchParams();
   const [playing, setPlaying] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-  const { tmdbData, ytsData, isLoading, error } = useFetchDetails(movieId);
+  const { tmdbData, ytsData, isLoading, error, fetchTmdbData } =
+    useFetchDetails(movieId);
   const colorScheme = useColorScheme();
 
   const onStateChange = useCallback((state: string) => {
@@ -404,6 +406,7 @@ export default function MovieDetails() {
             </View>
           )}
         </View>
+        {error && <NetworkError onRetry={fetchTmdbData} />}
       </ScrollView>
     </ThemedView>
   );
