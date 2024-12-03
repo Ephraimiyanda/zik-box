@@ -141,7 +141,6 @@ export default function TrendingMovies() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={refresh}
-            progressBackgroundColor={Colors[colorScheme ?? "dark"].background}
             colors={[Colors.active]}
           />
         }

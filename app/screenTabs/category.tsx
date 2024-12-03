@@ -144,7 +144,6 @@ export default function Category({
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={refresh}
-            
             colors={[Colors.active]}
           />
         }
