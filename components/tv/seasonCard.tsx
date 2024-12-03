@@ -1,22 +1,22 @@
-import { View, Text, useColorScheme } from "react-native";
-import { Image, ImageBackground } from "expo-image";
-import { Link } from "expo-router";
+import { View, Text, useColorScheme, TouchableOpacity } from "react-native";
+import { ImageBackground } from "expo-image";
 import { Colors } from "@/constants/Colors";
-import { movieTypes, season } from "@/types/movieTypes";
-import { Chip, Skeleton } from "@rneui/base";
+import { season } from "@/types/movieTypes";
+import { Skeleton } from "@rneui/base";
 import { CustomChip } from "../chip/chip";
 export function SeasonCard({
   item,
   cardWidth,
+  onPress,
 }: {
   item: season;
   cardWidth: number;
+  onPress?: () => void;
 }) {
   const colorScheme = useColorScheme();
   return (
-    <Link
-      //@ts-ignore
-      href={"#"}
+    <TouchableOpacity
+      onPress={onPress}
       style={{
         position: "relative",
         flexDirection: "column",
@@ -79,6 +79,6 @@ export function SeasonCard({
           {"season" + " " + item.season_number}
         </Text>
       </View>
-    </Link>
+    </TouchableOpacity>
   );
 }

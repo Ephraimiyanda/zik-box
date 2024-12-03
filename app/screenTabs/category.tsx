@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  View,
+} from "react-native";
 import * as Network from "expo-network";
 import { useFetchData } from "@/hooks/useFetchData";
 import { MovieCardLoader } from "@/components/loaders/movieCardLoader";
@@ -7,12 +12,11 @@ import { MovieCard } from "@/components/movie/movieCard";
 import { movieTypes } from "@/types/movieTypes";
 import ButtonFlatList from "@/components/butons/buttonList";
 import { CountryCodes } from "@/constants/lists";
-import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
 import { FlashList } from "@shopify/flash-list";
 import { TvCard } from "@/components/tv/tvCard";
-import { ErrorBoundaryProps } from "expo-router";
 import NetworkError from "@/components/networkError/networkError";
+import { colorScheme } from "@/constants/colorScheme";
 
 export default function Category({
   category,
@@ -42,7 +46,7 @@ export default function Category({
   }, [selectedCountryCode, page]);
 
   //get parameters from hook
-  const { data, isLoading, error, fetchData } = useFetchData(urls);
+  const { data, isLoading, error, refresh, isRefreshing } = useFetchData(urls);
 
   //get past 10 years
   function getLastTenYears() {
@@ -136,6 +140,16 @@ export default function Category({
       }}
     >
       <FlashList
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refresh}
+            
+            colors={[Colors.active]}
+          />
+        }
+        refreshing={isRefreshing}
+        onRefresh={refresh}
         onEndReached={infiniteScrolling}
         keyExtractor={(item, index) => item.id.toString() + index}
         estimatedItemSize={20 * page}
@@ -162,7 +176,7 @@ export default function Category({
           />
         }
       ></FlashList>
-      {error && <NetworkError onRetry={fetchData} />}
+      {error && <NetworkError onRetry={refresh} />}
     </View>
   );
 }

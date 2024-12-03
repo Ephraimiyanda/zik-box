@@ -5,7 +5,7 @@ export function useSearch(query: string, page: number) {
   const [data, setData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
-  const searchQuery = useDebounceValue(query, 1500);
+  const searchQuery = useDebounceValue(query, 1000);
 
   const API_ROUTE = process.env.EXPO_PUBLIC_API_ROUTE;
   const API_KEY = process.env.EXPO_PUBLIC_API_KEY;

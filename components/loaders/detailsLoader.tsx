@@ -1,10 +1,17 @@
+import { Colors } from "@/constants/Colors";
+import { colorScheme } from "@/constants/colorScheme";
 import { Skeleton } from "@rneui/base";
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 
 export const SkeletonLoading = () => {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme ?? "dark"].background },
+      ]}
+    >
       {/* Header Section */}
       <View style={styles.header}>
         <Skeleton style={{ width: 200, height: 20, marginBottom: 8 }} />
@@ -45,10 +52,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#121212", // Dark theme background
   },
   skeletonBase: {
-    backgroundColor: "#333",
     opacity: 0.7,
     borderRadius: 10,
   },

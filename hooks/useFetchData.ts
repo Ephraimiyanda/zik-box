@@ -1,52 +1,60 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
-export function useFetchData(urls: string[]) {
+export function useFetchData(urls: string[], timeoutMs = 7000) {
   const [data, setData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false); // For pull-to-refresh
 
   const API_ROUTE = process.env.EXPO_PUBLIC_API_ROUTE;
   const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 
-  const fetchData = async () => {
-    if (error) {
-      setError(false);
-    }
-    setIsLoading(true);
+  const fetchDataWithTimeout = async (url: string) => {
+    const fetchPromise = fetch(`${API_ROUTE}/${url}`, {
+      headers: {
+        AUTHORIZATION: "Bearer " + API_KEY,
+      },
+    });
+
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Request timed out")), timeoutMs)
+    );
+
+    return Promise.race([fetchPromise, timeoutPromise]);
+  };
+
+  const fetchData = async (isRefreshing = false) => {
+    if (!isRefreshing) setIsLoading(true);
+    setError(false);
+
     try {
-      // Fetch all URLs in parallel
       const responses = await Promise.all(
-        urls.map((url: string) =>
-          fetch(`${API_ROUTE}/${url}`, {
-            headers: {
-              AUTHORIZATION: "Bearer " + API_KEY,
-            },
-          })
-        )
+        urls.map((url) => fetchDataWithTimeout(url))
       );
 
-      // Ensure all responses are okay before proceeding
-      const jsonData: any = await Promise.all(
+      const jsonData = await Promise.all(
         responses.map((response) => {
           if (!response.ok) {
-            setError(true);
+            throw new Error(`Error: ${response.status}`);
           }
           return response.json();
         })
       );
 
-      if (jsonData) {
-        setData(jsonData);
-        setIsLoading(false);
-      }
+      setData(jsonData);
     } catch (err) {
       setError(true);
-      setIsLoading(false);
-      console.error(err); // Optional: log the error for debugging
+      console.error(err); // Optional: log error for debugging
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   };
+
+  const refresh = useCallback(() => {
+    setIsRefreshing(true);
+    fetchData(true);
+  }, [urls]);
 
   useEffect(() => {
     if (urls.length > 0) {
@@ -54,6 +62,5 @@ export function useFetchData(urls: string[]) {
     }
   }, [urls]);
 
-  // Return the data, loading, and error states
-  return { data, isLoading, error, fetchData };
+  return { data, isLoading, error, refresh, isRefreshing };
 }

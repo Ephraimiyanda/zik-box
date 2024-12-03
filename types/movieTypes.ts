@@ -55,6 +55,7 @@ export interface tmdbData {
   reviews: review[];
   id: number;
   original_title: string;
+  original_name:string;
   overview: string;
   release_date: string;
   runtime: number;
@@ -70,4 +71,11 @@ export interface searchCard extends movieTypes {
   media_type: string;
   original_title: string;
   known_for_department: string;
+}
+export interface episodeList {
+  id: number;
+  name: string;
+  showId: number;
+  episode_number: number;
+  season_number: number;
 }

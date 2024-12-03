@@ -22,7 +22,12 @@ const NetworkError: React.FC<NetworkErrorProps> = ({ onRetry }) => {
     return connected.isConnected;
   };
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme ?? "dark"].background },
+      ]}
+    >
       <MaterialIcons
         name="wifi-off"
         size={50}
@@ -69,6 +74,8 @@ const styles = StyleSheet.create({
     padding: 20,
     position: "absolute",
     width: "100%",
+    height: "100%",
+    zIndex: 20,
   },
   text: {
     fontSize: 18,

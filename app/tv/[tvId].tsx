@@ -1,5 +1,14 @@
 import styles from "@/styles/style";
-import { ScrollView, View, Text, useColorScheme, FlatList } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  useColorScheme,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  Dimensions,
+} from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { useFetchTvDetails } from "@/hooks/useFetchTvDetails";
@@ -10,26 +19,42 @@ import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { cast, review, season } from "@/types/movieTypes";
+import { cast, episodeList, review, season } from "@/types/movieTypes";
 import { MovieDetailLoader } from "@/components/loaders/movieDetailLoader";
 import { ProfileCard } from "@/components/profile/profileCard";
 import { ReviewCard } from "@/components/review/reviewCard";
 import { SeasonCard } from "@/components/tv/seasonCard";
 import { TvCard } from "@/components/tv/tvCard";
-
+import NetworkError from "@/components/networkError/networkError";
+import { BottomSheet, Button } from "@rneui/base";
+import { FlashList } from "@shopify/flash-list";
+interface list {
+  data: episodeList[];
+  size: number;
+}
 export default function SeriesDetails() {
   const { tvId } = useLocalSearchParams();
   const [playing, setPlaying] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-  const { tmdbData, ytsData, isLoading, error } = useFetchTvDetails(tvId);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isListLoading, setIsListLoading] = useState(false);
+  const [episodeList, setEpisodeList] = useState<list>({
+    data: [],
+    size: 0,
+  });
+  const { tmdbData, ytsData, isLoading, error, fetchTmdbData } =
+    useFetchTvDetails(tvId);
   const colorScheme = useColorScheme();
+  const device_height = Dimensions.get("window").height;
 
+  //pause video once done playing
   const onStateChange = useCallback((state: string) => {
     if (state === "ended") {
       setPlaying(false);
     }
   }, []);
 
+  //show less  or more text
   const toggleTextDisplay = () => {
     setShowFullText((prev) => !prev);
   };
@@ -50,6 +75,43 @@ export default function SeriesDetails() {
       ? playlist_trailers[0]
       : null;
   const previewText = tmdbData?.overview?.slice(0, 200);
+
+  //open bottom drawer fro streaming resource
+  function OpenBottomDrawer(
+    name: string,
+    episode_count: number,
+    season_number: number,
+    Id: number
+  ) {
+    // Simulate initial loading
+    setIsListLoading(true);
+
+    // Introduce delay to simulate loading time
+    setTimeout(() => {
+      const myArray = Array.from({ length: episode_count }, () => ({}));
+      const updatedArray = myArray.map((obj, index) => ({
+        id: index + 1,
+        name: `Season ${season_number} episode ${index + 1}`,
+        showId: Id,
+        episode_number: index + 1,
+        season_number,
+      }));
+
+      if (episode_count > 0) {
+        setEpisodeList({ data: updatedArray, size: episode_count });
+      } else {
+        setEpisodeList({ data: [], size: 0 });
+      }
+    }, 300); // Adjust delay as needed
+
+    setIsVisible(true);
+  }
+
+  //close bottom drawer
+  function closeBottomDrawer() {
+    setIsVisible(false);
+    setEpisodeList({ data: [], size: 0 });
+  }
 
   //return loading screen
   if (isLoading) {
@@ -98,7 +160,7 @@ export default function SeriesDetails() {
             }}
             numberOfLines={2}
           >
-            {tmdbData?.original_title}
+            {tmdbData?.original_name}
           </ThemedText>
           <View
             style={{
@@ -323,6 +385,14 @@ export default function SeriesDetails() {
                       cardWidth={130}
                       key={item.id + item.poster_path}
                       item={item}
+                      onPress={() =>
+                        OpenBottomDrawer(
+                          tmdbData.original_name,
+                          item.episode_count,
+                          item.season_number,
+                          tmdbData.id
+                        )
+                      }
                     ></SeasonCard>
                   ))}
             </ScrollView>
@@ -432,6 +502,111 @@ export default function SeriesDetails() {
           )}
         </View>
       </ScrollView>
+
+      {/* bottom drawer */}
+      <BottomSheet
+        isVisible={isVisible}
+        onBackdropPress={closeBottomDrawer}
+        backdropStyle={{
+          backfaceVisibility: "hidden",
+          backgroundColor: "transparent",
+        }}
+      >
+        <View
+          style={{
+            height: device_height / 1.8,
+            paddingTop: 10,
+            borderRadius: 20,
+            backgroundColor: Colors[colorScheme ?? "dark"].background,
+          }}
+        >
+          {episodeList.data && (
+            <FlashList
+              data={episodeList?.data || []}
+              keyExtractor={(item, index) => item.id.toString() + index}
+              estimatedItemSize={episodeList.size}
+              onLoad={() => setIsListLoading(false)}
+              ListHeaderComponent={
+                <ThemedText
+                  type="defaultSemiBold"
+                  style={{
+                    paddingBottom: 10,
+                  }}
+                >
+                  Streaming resource
+                </ThemedText>
+              }
+              contentContainerStyle={{
+                // backgroundColor: Colors[colorScheme ?? "dark"].background,
+                paddingTop: 15,
+                paddingBottom: 10,
+                paddingHorizontal: 10,
+              }}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  // onPress={navigate}
+                  key={item.id}
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                    gap: 4,
+                    paddingVertical: 7,
+                  }}
+                >
+                  <View
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      gap: 2,
+                      width: "100%",
+                    }}
+                  >
+                    <ThemedText
+                      numberOfLines={1}
+                      type="default"
+                      style={{ fontSize: 14 }}
+                    >
+                      {item.name}
+                    </ThemedText>
+                  </View>
+                </TouchableOpacity>
+              )}
+              ListEmptyComponent={
+                <View
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 2,
+                    width: "100%",
+                  }}
+                >
+                  <ThemedText
+                    numberOfLines={1}
+                    type="default"
+                    style={{ fontSize: 14, textAlign: "center" }}
+                  >
+                    No episodes found
+                  </ThemedText>
+                </View>
+              }
+            ></FlashList>
+          )}
+          <Button
+            buttonStyle={{
+              width: "100%",
+              backgroundColor: Colors[colorScheme ?? "dark"].fadeColor,
+              position: "absolute",
+              zIndex: 50,
+            }}
+            onPress={closeBottomDrawer}
+          >
+            Cancel
+          </Button>
+        </View>
+      </BottomSheet>
     </ThemedView>
   );
 }

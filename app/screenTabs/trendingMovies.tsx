@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  View,
+} from "react-native";
 
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import {
@@ -15,6 +21,8 @@ import { Colors } from "@/constants/Colors";
 import { FlashList } from "@shopify/flash-list";
 import NetworkError from "@/components/networkError/networkError";
 import { ErrorBoundaryProps } from "expo-router";
+import { Refresher } from "@/components/refreshController/refresher";
+import { colorScheme } from "@/constants/colorScheme";
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return <NetworkError onRetry={retry} />;
@@ -39,7 +47,7 @@ export default function TrendingMovies() {
     ]);
   }, [page]);
 
-  const { data, isLoading, error, fetchData } = useFetchData(urls);
+  const { data, isLoading, error, isRefreshing, refresh } = useFetchData(urls);
 
   // Handle incoming data when it's available
   useEffect(() => {
@@ -129,6 +137,16 @@ export default function TrendingMovies() {
         onEndReached={infiniteScrolling}
         keyExtractor={(item, index) => item.id.toString() + index}
         estimatedItemSize={20 * page}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refresh}
+            progressBackgroundColor={Colors[colorScheme ?? "dark"].background}
+            colors={[Colors.active]}
+          />
+        }
+        refreshing={isRefreshing}
+        onRefresh={refresh}
         ListHeaderComponent={
           <View
             style={{
@@ -169,7 +187,7 @@ export default function TrendingMovies() {
               inactiveDotOpacity={0.4}
               inactiveDotScale={0.6}
               tappableDots={true}
-              animatedFriction={0.5}
+              animatedFriction={1}
               animatedDuration={0}
               animatedTension={0}
             />
@@ -192,7 +210,7 @@ export default function TrendingMovies() {
           />
         }
       ></FlashList>
-      {error && <NetworkError onRetry={fetchData} />}
+      {error && <NetworkError onRetry={refresh} />}
     </View>
   );
 }
