@@ -16,8 +16,8 @@ export function ProfileCard({
   return (
     <Link
       href={{
-        pathname: "/movie/[movieId]",
-        params: { movieId: item.id },
+        pathname: "/people/[id]",
+        params: { id: item.id },
       }}
       style={{
         position: "relative",

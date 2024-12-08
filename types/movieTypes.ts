@@ -9,6 +9,7 @@ export interface movieTypes {
   vote_average: number;
   name?: string;
   original_name?: string;
+  media_type?: string;
 }
 export interface Genre {
   id: number;
@@ -55,7 +56,7 @@ export interface tmdbData {
   reviews: review[];
   id: number;
   original_title: string;
-  original_name:string;
+  original_name: string;
   overview: string;
   release_date: string;
   runtime: number;
@@ -78,4 +79,13 @@ export interface episodeList {
   showId: number;
   episode_number: number;
   season_number: number;
+}
+
+export interface people {
+  name: string;
+  known_for_department: string;
+  profile_path: string;
+  combined_credits: {
+    cast: searchCard[];
+  };
 }
