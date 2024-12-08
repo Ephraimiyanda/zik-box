@@ -1,81 +1,53 @@
+import { Colors } from "@/constants/Colors";
+import { colorScheme } from "@/constants/colorScheme";
 import { Skeleton } from "@rneui/base";
 import { View, StyleSheet, ScrollView } from "react-native";
+import { ThemedView } from "../ThemedView";
 
 export function MovieDetailLoader() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Skeleton style={styles.imgBackground}></Skeleton>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          gap: 10,
-          width: "100%",
-          paddingHorizontal: 14,
-        }}
-      >
-        {/* {title} */}
-        <Skeleton
+    <ThemedView
+      style={styles.container}
+      darkColor={Colors.dark.background}
+      lightColor={Colors.light.background}
+    >
+      <ScrollView>
+        <Skeleton style={styles.imgBackground}></Skeleton>
+        <View
           style={{
-            width: "50%",
-            height: 28,
-            marginBottom: 16,
-            borderRadius: 15,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            gap: 10,
+            width: "100%",
+            paddingHorizontal: 14,
           }}
-        />
-        {/* Header Section */}
-        <View style={styles.header}>
-          <Skeleton style={{ width: 120, height: 18, borderRadius: 8 }} />
-          <Skeleton style={{ width: 120, height: 18, borderRadius: 8 }} />
-        </View>
-        <Skeleton
-          style={{ width: 120, height: 20, marginBottom: 16, borderRadius: 10 }}
-        />
-
-        {/* Details Section */}
-        <View style={styles.details}>
+        >
+          {/* {title} */}
           <Skeleton
-            style={[
-              styles.line,
-              {
-                width: "100%",
-                maxWidth: "100%",
-              },
-            ]}
-          ></Skeleton>
+            style={{
+              width: "50%",
+              height: 28,
+              marginBottom: 16,
+              borderRadius: 15,
+            }}
+          />
+          {/* Header Section */}
+          <View style={styles.header}>
+            <Skeleton style={{ width: 120, height: 18, borderRadius: 8 }} />
+            <Skeleton style={{ width: 120, height: 18, borderRadius: 8 }} />
+          </View>
           <Skeleton
-            style={[
-              styles.line,
-              {
-                width: "90%",
-                maxWidth: "90%",
-              },
-            ]}
-          ></Skeleton>
-          <Skeleton style={styles.line}></Skeleton>
-        </View>
+            style={{
+              width: 120,
+              height: 20,
+              marginBottom: 16,
+              borderRadius: 10,
+            }}
+          />
 
-        {/* Genre Section */}
-        <View style={styles.genre}>
-          <Skeleton style={styles.genreTag} />
-          <Skeleton style={styles.genreTag} />
-        </View>
-
-        {/* Cast Section */}
-        <View style={styles.cast}>
-          <View style={styles.profile}>
-            <Skeleton style={styles.img} />
-
-            <Skeleton
-              style={[
-                styles.line,
-                {
-                  width: "80%",
-                  maxWidth: "90%",
-                },
-              ]}
-            />
+          {/* Details Section */}
+          <View style={styles.details}>
             <Skeleton
               style={[
                 styles.line,
@@ -84,62 +56,104 @@ export function MovieDetailLoader() {
                   maxWidth: "100%",
                 },
               ]}
-            />
-          </View>
-          <View style={styles.profile}>
-            <Skeleton style={styles.img} />
-
+            ></Skeleton>
             <Skeleton
               style={[
                 styles.line,
                 {
-                  width: "80%",
+                  width: "90%",
                   maxWidth: "90%",
                 },
               ]}
-            />
-            <Skeleton
-              style={[
-                styles.line,
-                {
-                  width: "100%",
-                  maxWidth: "100%",
-                },
-              ]}
-            />
+            ></Skeleton>
+            <Skeleton style={styles.line}></Skeleton>
           </View>
-          <View style={styles.profile}>
-            <Skeleton style={styles.img} />
 
-            <Skeleton
-              style={[
-                styles.line,
-                {
-                  width: "80%",
-                  maxWidth: "90%",
-                },
-              ]}
-            />
-            <Skeleton
-              style={[
-                styles.line,
-                {
-                  width: "100%",
-                  maxWidth: "100%",
-                },
-              ]}
-            />
+          {/* Genre Section */}
+          <View style={styles.genre}>
+            <Skeleton style={styles.genreTag} />
+            <Skeleton style={styles.genreTag} />
+          </View>
+
+          {/* Cast Section */}
+          <View style={styles.cast}>
+            <View style={styles.profile}>
+              <Skeleton style={styles.img} />
+
+              <Skeleton
+                style={[
+                  styles.line,
+                  {
+                    width: "80%",
+                    maxWidth: "90%",
+                  },
+                ]}
+              />
+              <Skeleton
+                style={[
+                  styles.line,
+                  {
+                    width: "100%",
+                    maxWidth: "100%",
+                  },
+                ]}
+              />
+            </View>
+            <View style={styles.profile}>
+              <Skeleton style={styles.img} />
+
+              <Skeleton
+                style={[
+                  styles.line,
+                  {
+                    width: "80%",
+                    maxWidth: "90%",
+                  },
+                ]}
+              />
+              <Skeleton
+                style={[
+                  styles.line,
+                  {
+                    width: "100%",
+                    maxWidth: "100%",
+                  },
+                ]}
+              />
+            </View>
+            <View style={styles.profile}>
+              <Skeleton style={styles.img} />
+
+              <Skeleton
+                style={[
+                  styles.line,
+                  {
+                    width: "80%",
+                    maxWidth: "90%",
+                  },
+                ]}
+              />
+              <Skeleton
+                style={[
+                  styles.line,
+                  {
+                    width: "100%",
+                    maxWidth: "100%",
+                  },
+                ]}
+              />
+            </View>
+          </View>
+
+          {/* Recommendations */}
+          <View style={styles.recommendations}>
+            <Skeleton style={styles.recommendationCard} />
+            <Skeleton style={styles.recommendationCard} />
+            <Skeleton style={styles.recommendationCard} />
           </View>
         </View>
-
-        {/* Recommendations */}
-        <View style={styles.recommendations}>
-          <Skeleton style={styles.recommendationCard} />
-          <Skeleton style={styles.recommendationCard} />
-          <Skeleton style={styles.recommendationCard} />
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </ThemedView>
   );
 }
 const styles = StyleSheet.create({

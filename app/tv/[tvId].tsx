@@ -85,10 +85,13 @@ export default function SeriesDetails() {
   ) {
     // Simulate initial loading
     setIsListLoading(true);
-
+    setIsVisible(true);
     // Introduce delay to simulate loading time
     setTimeout(() => {
-      const myArray = Array.from({ length: episode_count }, () => ({}));
+      const myArray = Array.from(
+        { length: episode_count > 0 ? episode_count : 0 },
+        () => ({})
+      );
       const updatedArray = myArray.map((obj, index) => ({
         id: index + 1,
         name: `Season ${season_number} episode ${index + 1}`,
@@ -97,14 +100,10 @@ export default function SeriesDetails() {
         season_number,
       }));
 
-      if (episode_count > 0) {
-        setEpisodeList({ data: updatedArray, size: episode_count });
-      } else {
-        setEpisodeList({ data: [], size: 0 });
-      }
-    }, 300); // Adjust delay as needed
+      setEpisodeList({ data: updatedArray, size: episode_count });
 
-    setIsVisible(true);
+      setIsListLoading(false);
+    }, 500);
   }
 
   //close bottom drawer
@@ -509,42 +508,77 @@ export default function SeriesDetails() {
         onBackdropPress={closeBottomDrawer}
         backdropStyle={{
           backfaceVisibility: "hidden",
-          backgroundColor: "transparent",
+          backgroundColor: Colors.translucent,
         }}
       >
         <View
           style={{
             height: device_height / 1.8,
             paddingTop: 10,
-            borderRadius: 20,
+            borderTopEndRadius: 20,
+            borderTopStartRadius: 20,
             backgroundColor: Colors[colorScheme ?? "dark"].background,
           }}
         >
-          {episodeList.data && (
+          {episodeList.data && !isListLoading && (
             <FlashList
               data={episodeList?.data || []}
               keyExtractor={(item, index) => item.id.toString() + index}
               estimatedItemSize={episodeList.size}
-              onLoad={() => setIsListLoading(false)}
               ListHeaderComponent={
-                <ThemedText
-                  type="defaultSemiBold"
+                <View
                   style={{
-                    paddingBottom: 10,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignContent: "center",
                   }}
                 >
-                  Streaming resource
-                </ThemedText>
+                  <ThemedText
+                    type="defaultSemiBold"
+                    style={{
+                      paddingBottom: 10,
+                    }}
+                  >
+                    Streaming resource
+                  </ThemedText>
+                  <TouchableOpacity
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: Colors.translucent,
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                    onPress={closeBottomDrawer}
+                  >
+                    <EvilIcons
+                      name="close"
+                      size={20}
+                      color={Colors[colorScheme ?? "dark"].text}
+                      style={{
+                        margin: "auto",
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
               }
               contentContainerStyle={{
-                // backgroundColor: Colors[colorScheme ?? "dark"].background,
                 paddingTop: 15,
                 paddingBottom: 10,
                 paddingHorizontal: 10,
               }}
               renderItem={({ item }) => (
-                <TouchableOpacity
-                  // onPress={navigate}
+                <Link
+                  href={{
+                    pathname: "/stream/[id]",
+                    params: {
+                      id: item.showId,
+                      season: item.season_number,
+                      episode: item.episode_number,
+                    },
+                  }}
                   key={item.id}
                   style={{
                     position: "relative",
@@ -572,7 +606,7 @@ export default function SeriesDetails() {
                       {item.name}
                     </ThemedText>
                   </View>
-                </TouchableOpacity>
+                </Link>
               )}
               ListEmptyComponent={
                 <View
@@ -583,28 +617,26 @@ export default function SeriesDetails() {
                     width: "100%",
                   }}
                 >
-                  <ThemedText
-                    numberOfLines={1}
-                    type="default"
-                    style={{ fontSize: 14, textAlign: "center" }}
-                  >
-                    No episodes found
-                  </ThemedText>
+                  {episodeList.data.length === 0 && (
+                    <ThemedText
+                      numberOfLines={1}
+                      type="default"
+                      style={{ fontSize: 14, textAlign: "center" }}
+                    >
+                      No episodes found
+                    </ThemedText>
+                  )}
                 </View>
               }
             ></FlashList>
           )}
-          <Button
-            buttonStyle={{
-              width: "100%",
-              backgroundColor: Colors[colorScheme ?? "dark"].fadeColor,
-              position: "absolute",
-              zIndex: 50,
-            }}
-            onPress={closeBottomDrawer}
-          >
-            Cancel
-          </Button>
+          {isListLoading && (
+            <ActivityIndicator
+              size="large"
+              color={Colors.active}
+              style={{ margin: "auto" }}
+            />
+          )}
         </View>
       </BottomSheet>
     </ThemedView>

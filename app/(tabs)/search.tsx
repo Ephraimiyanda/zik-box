@@ -20,6 +20,7 @@ import { FlashList } from "@shopify/flash-list";
 import { searchCard } from "@/types/movieTypes";
 import { SearchLoader } from "@/components/loaders/searchLoader";
 import NetworkError from "@/components/networkError/networkError";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,8 +65,6 @@ export default function Search() {
           styles.flatContainer,
           {
             height: 60,
-            paddingLeft: 3,
-            paddingRight: 4,
           },
         ]}
       >
@@ -168,7 +167,11 @@ export default function Search() {
       )}
 
       {error && <NetworkError onRetry={runFetchData} />}
-      {isLoading && searchQuery.length > 1 && <SearchLoader />}
+      {isLoading && searchQuery.length > 1 ? (
+        <SearchLoader />
+      ) : (
+        <ThemedText style={{ margin: "auto" }}>Enter your search</ThemedText>
+      )}
     </ThemedView>
   );
 }

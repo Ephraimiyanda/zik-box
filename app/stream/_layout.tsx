@@ -33,7 +33,7 @@ export default function StreamLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen
-          name="[movieId]"
+          name="[id]"
           getId={({ params }) => params?.movieId}
           key={Date.now()}
           options={{ headerShown: false }}

@@ -33,4 +33,5 @@ export const Colors = {
   },
   active: "#FF8700",
   white: "#ffff",
+  translucent: "rgba(255, 255, 255, 0.2)",
 };

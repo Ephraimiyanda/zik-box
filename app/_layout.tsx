@@ -41,6 +41,8 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="movie" options={{ headerShown: false }} />
         <Stack.Screen name="tv" options={{ headerShown: false }} />
+        <Stack.Screen name="stream" options={{ headerShown: false }} />
+        <Stack.Screen name="actors" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

@@ -8,7 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { useFetchDetails } from "@/hooks/useFetchDetails";
 import React, { useCallback, useState } from "react";
@@ -222,6 +222,7 @@ export default function MovieDetails() {
               >
                 Genre
               </ThemedText>
+
               <FlatList
                 data={tmdbData?.genres}
                 horizontal
@@ -249,6 +250,31 @@ export default function MovieDetails() {
               ></FlatList>
             </View>
           </View>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/stream/[id]",
+                //@ts-ignore
+                params: { id: tmdbData.id },
+              })
+            }
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              height: 40,
+              borderRadius: 8,
+              width: "100%",
+              marginTop: 10,
+
+              flexDirection: "column",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ThemedText style={{ textAlign: "center" }}>
+              Stream movie
+            </ThemedText>
+          </TouchableOpacity>
           <View
             style={{
               display: "flex",
