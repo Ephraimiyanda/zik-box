@@ -91,6 +91,7 @@ export default function People() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView
+        onScrollEndDrag={infiniteScrolling}
         contentContainerStyle={{
           display: "flex",
           flexDirection: "column",
@@ -174,12 +175,8 @@ export default function People() {
           </ThemedText>
         </View>
         <FlashList
-          refreshing={isRefreshing}
-          onRefresh={refresh}
-          onEndReached={infiniteScrolling}
           keyExtractor={(item, index) => item.id.toString() + index}
           estimatedItemSize={12 * page}
-          onEndReachedThreshold={1}
           numColumns={3}
           horizontal={false}
           data={filmography}

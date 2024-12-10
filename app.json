@@ -4,6 +4,7 @@
     "slug": "zik-box",
     "version": "1.0.0",
     "orientation": "portrait",
+    "description": "Stream your favorite movies and series ",
     "icon": "./assets/images/zik-box-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -11,7 +12,6 @@
       "image": "./assets/images/splash.png",
       "resizeMode": "contain"
     },
-
     "ios": {
       "supportsTablet": true
     },
@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/zik-box-icon.png",
         "backgroundColor": "#e3e3e3"
-      }
+      },
+      "package": "Zik.Box"
     },
     "web": {
       "bundler": "metro",
