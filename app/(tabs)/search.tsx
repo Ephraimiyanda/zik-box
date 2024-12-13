@@ -165,7 +165,6 @@ export default function Search() {
           }
         ></FlashList>
       )}
-
       {error && <NetworkError onRetry={runFetchData} />}
       {isLoading && searchQuery.length > 1 ? (
         <SearchLoader />
