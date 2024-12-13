@@ -8,11 +8,8 @@ import {
   Dimensions,
   Image,
   ImageBackground,
-  useColorScheme,
 } from "react-native";
 import { ThemedText } from "../ThemedText";
-import { Chip } from "@rneui/base";
-import { colorScheme } from "@/constants/colorScheme";
 import { router } from "expo-router";
 import { CustomChip } from "../chip/chip";
 

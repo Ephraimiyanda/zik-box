@@ -16,7 +16,7 @@ import { Colors } from "@/constants/Colors";
 import { FlashList } from "@shopify/flash-list";
 import { TvCard } from "@/components/tv/tvCard";
 import NetworkError from "@/components/networkError/networkError";
-import { colorScheme } from "@/constants/colorScheme";
+import { useColorScheme } from "react-native";
 
 export default function Category({
   category,
@@ -31,6 +31,10 @@ export default function Category({
   const formatCategory = category.split(" ").join("_").toLocaleLowerCase();
   const [urls, setUrls] = useState<string[]>([]);
   const [infiniteLoading, setInfiteLoading] = useState(false);
+  const themeBackground =
+    useColorScheme() === "light"
+      ? Colors.light.background
+      : Colors.dark.background;
 
   // Fetch data when the screen is focused
   useEffect(() => {
@@ -145,6 +149,7 @@ export default function Category({
             refreshing={isRefreshing}
             onRefresh={refresh}
             colors={[Colors.active]}
+            progressBackgroundColor={themeBackground}
           />
         }
         refreshing={isRefreshing}

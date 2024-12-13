@@ -8,7 +8,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import TrendingMovies from "../screenTabs/trendingMovies";
 import Category from "../screenTabs/category";
 import { ThemedView } from "@/components/ThemedView";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { TabView, TabBar } from "react-native-tab-view";
 
 export default function Index() {
   const [index, setIndex] = useState(0);

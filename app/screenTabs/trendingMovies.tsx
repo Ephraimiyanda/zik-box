@@ -5,6 +5,7 @@ import {
   RefreshControl,
   ScrollView,
   View,
+  useColorScheme,
 } from "react-native";
 
 import Carousel, { Pagination } from "react-native-snap-carousel";
@@ -39,6 +40,10 @@ export default function TrendingMovies() {
   const [index, setIndex] = useState(0);
   const [infiniteLoading, setInfiteLoading] = useState(false);
   const isCarousel = useRef(null);
+  const themeBackground =
+    useColorScheme() === "light"
+      ? Colors.light.background
+      : Colors.dark.background;
 
   useEffect(() => {
     setUrls([
@@ -65,7 +70,7 @@ export default function TrendingMovies() {
       setTrendingDayMovieData((prev) => [...prev, ...uniqueTrendingDayMovie]);
       setTrendingWeekMovieData((prev) => [...prev, ...uniqueTrendingWeekMovie]);
     }
-  }, [data]);
+  }, [data, isRefreshing]);
 
   // Infinite scrolling function
   const infiniteScrolling = () => {
@@ -142,6 +147,7 @@ export default function TrendingMovies() {
             refreshing={isRefreshing}
             onRefresh={refresh}
             colors={[Colors.active]}
+            progressBackgroundColor={themeBackground}
           />
         }
         refreshing={isRefreshing}

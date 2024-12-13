@@ -28,34 +28,24 @@ export function MovieCard({
       }}
     >
       <View key={item.id}>
-        {item.poster_path ? (
-          <Image
-            style={{
-              minHeight: 170,
-              maxHeight: 170,
-              height: "100%",
-              flex: 1,
-              width: cardWidth,
-              borderRadius: 10,
-              backgroundColor: "transparent",
-              borderColor: "transparent",
-              maxWidth: cardWidth,
-            }}
-            contentFit="cover"
-            transition={1000}
-            source={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
-          />
-        ) : (
-          <Skeleton
-            style={{
-              flex: 1,
-              width: "100%",
-              height: 170,
-              borderRadius: 10,
-              maxWidth: cardWidth,
-            }}
-          />
-        )}
+        <Image
+          style={{
+            minHeight: 170,
+            maxHeight: 170,
+            height: "100%",
+            flex: 1,
+            width: cardWidth,
+            borderRadius: 10,
+            backgroundColor: "transparent",
+            borderColor: "transparent",
+            maxWidth: cardWidth,
+          }}
+          contentFit="cover"
+          transition={1000}
+          source={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
+          placeholder={require("../../assets/images/no-poster-1.jpg")}
+          placeholderContentFit="cover"
+        />
 
         <Text
           style={{

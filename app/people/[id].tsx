@@ -52,15 +52,6 @@ export default function People() {
     }
   }, [page, data, infiniteLoading]);
 
-  // Reset state on refresh or when data changes
-  useEffect(() => {
-    if (!isRefreshing) {
-      setPage(1);
-      setFilmography([]);
-      setInfiniteLoading(false);
-    }
-  }, [data, isRefreshing]);
-
   //render movie item or render tv item
   const renderMovieItem = useCallback(({ item }: { item: movieTypes }) => {
     if (item.media_type === "movie") {
@@ -72,11 +63,12 @@ export default function People() {
 
   if (isLoading) {
     return (
-      <View
+      <ThemedView
         style={{
-          backgroundColor: Colors[colorScheme ?? "dark"].background,
           height: "100%",
         }}
+        darkColor={Colors.dark.background}
+        lightColor={Colors.light.background}
       >
         <ActivityIndicator
           size="large"
@@ -85,7 +77,7 @@ export default function People() {
             margin: "auto",
           }}
         />
-      </View>
+      </ThemedView>
     );
   }
   return (
