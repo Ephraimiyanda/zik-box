@@ -198,6 +198,7 @@ export default function TrendingMovies() {
             />
           </View>
         }
+        showsVerticalScrollIndicator={false}
         disableAutoLayout={true}
         onEndReachedThreshold={1}
         numColumns={3}

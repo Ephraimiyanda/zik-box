@@ -173,6 +173,7 @@ export default function People() {
           horizontal={false}
           data={filmography}
           renderItem={renderMovieItem}
+          showsVerticalScrollIndicator={false}
           ListFooterComponent={
             <ActivityIndicator
               size="large"

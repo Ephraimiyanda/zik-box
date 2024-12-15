@@ -164,6 +164,7 @@ export default function Category({
             setSelectedButton={setSelectedCountryCode}
           ></ButtonFlatList>
         }
+        showsVerticalScrollIndicator={false}
         onEndReachedThreshold={1}
         numColumns={3}
         horizontal={false}

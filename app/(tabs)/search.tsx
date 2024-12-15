@@ -130,6 +130,7 @@ export default function Search() {
           estimatedItemSize={20 * page}
           renderItem={renderSearchItem}
           data={data}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: 12,
           }}

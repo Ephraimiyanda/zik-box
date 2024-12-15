@@ -69,6 +69,7 @@ export default function MovieDetails() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           display: "flex",
           flexDirection: "column",

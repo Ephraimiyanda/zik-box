@@ -21,10 +21,18 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  // In your App component:
+
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync(); // Prevent auto-hiding
+
+      // Load your app data here
+
+      await SplashScreen.hideAsync(); // Hide the splash screen when ready
     }
+
+    prepare();
   }, [loaded]);
 
   if (!loaded) {
@@ -36,6 +44,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           statusBarColor: Colors[colorScheme ?? "dark"].background,
+          navigationBarColor: Colors[colorScheme ?? "dark"].background,
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

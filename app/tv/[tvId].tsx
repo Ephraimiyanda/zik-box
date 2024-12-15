@@ -127,6 +127,7 @@ export default function SeriesDetails() {
           flexWrap: "wrap",
           gap: 4,
         }}
+        showsVerticalScrollIndicator={false}
       >
         {!isLoading && (
           <YoutubePlayer
