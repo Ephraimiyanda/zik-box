@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "description": "Stream your favorite movies and series",
-    "icon": "./assets/images/zik-box-icon.png",
+    "icon": "./assets/images/zik-box-icon.png",  
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#1E1E1E",
@@ -25,7 +25,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/zik-box-icon.png",
-        "backgroundColor": "#e3e3e3",
+        "backgroundColor": "#808080",
         "resizeMode": "contain"
       },
       "package": "Zik.Box",

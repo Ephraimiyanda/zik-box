@@ -78,7 +78,6 @@ export default function SeriesDetails() {
 
   //open bottom drawer fro streaming resource
   function OpenBottomDrawer(
-    name: string,
     episode_count: number,
     season_number: number,
     Id: number
@@ -385,14 +384,17 @@ export default function SeriesDetails() {
                       cardWidth={130}
                       key={item.id + item.poster_path}
                       item={item}
-                      onPress={() =>
-                        OpenBottomDrawer(
-                          tmdbData.original_name,
-                          item.episode_count,
-                          item.season_number,
-                          tmdbData.id
-                        )
-                      }
+                      onPress={() => {
+                        if (item.episode_count > 0) {
+                          OpenBottomDrawer(
+                            item.episode_count,
+                            item.season_number,
+                            tmdbData.id
+                          );
+                        } else {
+                          alert("The episodes are yet to be released");
+                        }
+                      }}
                     ></SeasonCard>
                   ))}
             </ScrollView>
