@@ -5,10 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "description": "Stream your favorite movies and series",
-    "icon": "./assets/images/zik-box-icon.png",  
+    "icon": "./assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#1E1E1E",
+    "backgroundColor": "#808080",
     "githubUrl": "https://github.com/Ephraimiyanda/zik-box",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -20,21 +20,20 @@
       "runtimeVersion": {
         "policy": "appVersion"
       },
-      "bundleIdentifier": "Zik.Box"
+      "bundleIdentifier": "com.zikbox.app"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/zik-box-icon.png",
-        "backgroundColor": "#808080",
-        "resizeMode": "contain"
+        
+        "foregroundImage": "./assets/images/adaptive-icon.png"
       },
-      "package": "Zik.Box",
+      "package": "com.zikbox.app",
       "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/zik-box-icon.png"
+      "favicon": "./assets/images/logo.png"
     },
     "plugins": [
       "expo-router",
@@ -45,13 +44,7 @@
         }
       ]
     ],
-    "experiments": {
-      "typedRoutes": true
-    },
     "extra": {
-      "router": {
-        "origin": false
-      },
       "eas": {
         "projectId": "266c2cf3-de0e-4ac0-a0dd-70023e055ff1"
       }
