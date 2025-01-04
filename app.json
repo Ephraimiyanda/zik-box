@@ -19,12 +19,12 @@
       "supportsTablet": true,
       "runtimeVersion": {
         "policy": "appVersion"
-      },
+      },  
       "bundleIdentifier": "com.zikbox.app"
     },
     "android": {
+      "icon": "./assets/images/adaptive-icon.png",
       "adaptiveIcon": {
-        
         "foregroundImage": "./assets/images/adaptive-icon.png"
       },
       "package": "com.zikbox.app",
